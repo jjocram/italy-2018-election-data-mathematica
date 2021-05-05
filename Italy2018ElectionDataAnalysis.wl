@@ -1,0 +1,13 @@
+(* ::Package:: *)
+
+(* :Title : Italy 2018 Election Data Analysis *)
+(* :Context : Italy 2018 Election Data Analysis *)
+(* :Author : ConteTer (Marco Ferrati, Michele Perlino, Tommaso Azzalin, Vittoria Conte) *)
+(* :Summary: a package to analyze the italy election data from the Ministero dell'Interno *)
+(* :Copyright : MIT *)
+(* :Package Version : 1 *)
+(* :Mathematica Version : 12.2*)
+(* :History : *)
+(* :Keywords : *)
+(* :Sources : https://github.com/jjocram/italy-2018-election-data-mathematica *)
+(* :Discussion : *)
