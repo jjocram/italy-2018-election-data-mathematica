@@ -13,7 +13,7 @@
 (* :Discussion : *)
 BeginPackage["Italy2018ElectionDataAnalysis`"]
 
-PlottingElectionEloctorsPie::usage = "PlottingElectionEloctorsPie[chamber, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the electors pie chart."
+PlottingElectionElectorsPie::usage = "PlottingElectionElectorsPie[chamber, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the electors pie chart."
 PlottingElectionVotersPie::usage = "PlottingElectionVotersPie[chamber, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters pie chart."
 PlottingElectionVotersNonVotersPie::usage = "PlottingElectionVotersNonVotersPie[chamber, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters and non voters pie chart."
 PlottingElectionRegionCoalitionsBars::usage = "PlottingElectionRegionCoalitionsBars[chamber, coalition, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot in each region the winning coalition."
@@ -47,7 +47,7 @@ Begin["`Private`"]
 	
 	GetChamber[] := chamberDataset
 	
-	(*d is used instead of district because of sHiT*)
+	(* d is used instead of district because it does not work otherwise *)
 	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ",_}], Take[Characters[d], Length[Characters[d]]-2], d]]
 	
 	FilterRegion[dataset_, region_] := If[region === Null, dataset, dataset[Select[#CIRCOSCRIZIONE == region &]]]
@@ -82,7 +82,7 @@ Begin["`Private`"]
 			Return[datasetToReturn]
 		]
 	
-	PlottingElectionEloctorsPie[chamber_, region_: Null, province_: Null, district_: Null, query_: Null] := 
+	PlottingElectionElectorsPie[chamber_, region_: Null, province_: Null, district_: Null, query_: Null] := 
 		Module[{dataset, datasetSelectBy, maleElectors, femaleElectors}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy["COMUNE"]];
