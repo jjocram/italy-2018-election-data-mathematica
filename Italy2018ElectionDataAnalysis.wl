@@ -88,7 +88,16 @@ Begin["`Private`"]
 				,{q, queries}];
 			Return[datasetToReturn]
 		]
+    
+     (* Filters the given dataset by the given last name *)
+	FilterLastName[dataset_, lastname_] := If[lastname === Null, dataset, dataset[Select[#COGNOME == lastname &]]]
 	
+	(* Filters the given dataset by the given first name *)
+	FilterFirstName[dataset_, firstname_] := If[firstname === Null, dataset, dataset[Select[#NOME == firstname &]]]
+	
+     (* Filters the given dataset by the given city *)
+	FilterCity[dataset_, city_] := If[city === Null, dataset, dataset[Select[#COMUNE == city &]]]
+
 	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionElectorsPie[chamber_, opts : OptionsPattern[]] := 
 		Module[{dataset, datasetSelectBy, maleElectors, femaleElectors}, 
@@ -105,7 +114,7 @@ Begin["`Private`"]
 			Return[{maleElectors, femaleElectors}]
 		]
 	
-	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	Options[PlottingElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionVotersPie[chamber_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
@@ -121,7 +130,7 @@ Begin["`Private`"]
 			Return[{maleVoters, femaleVoters}]
 		]
 		
-	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	Options[PlottingElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionVotersNonVotersPie[chamber_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters, maleElectors, femaleElectors}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
@@ -140,7 +149,7 @@ Begin["`Private`"]
 			Return[{maleVoters, femaleVoters, maleElectors-maleVoters, femaleElectors-femaleVoters}]
 		]
 		
-	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars[chamber_, coalition_, opts : OptionsPattern[]] :=
 		Module[{dataset, parties, datasetSelectBy}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
@@ -163,14 +172,44 @@ Begin["`Private`"]
 			Table[Total[datasetSelectBy[Select[GetRegionFromDistrict[#CIRCOSCRIZIONE] == r&]][Select[MemberQ[parties, #LISTA] &]][All, "VOTICANDUNINOM"]], {r, regions}]
 		]
 		
-	Options[PlottingElectionElectorsPie] = {city -> Null};
+	Options[PlottingCandidate] = {city -> Null};
 	PlottingCandidate[name_, surname_, opts : OptionsPattern[]] :=
-		Return[]
+	     Module[{chamberDatasetSelectBy, senateDatasetSelectBy, returnDataset, uninominaleName},
+	         (* Filtering data for the Chamber of Deputies *)
+	         chamberDatasetSelectBy = chamberDataset;
+	         
+	         chamberDatasetSelectBy = FilterLastName[chamberDatasetSelectBy, surname];
+	         chamberDatasetSelectBy = FilterFirstName[chamberDatasetSelectBy, name];
+	         chamberDatasetSelectBy = FilterCity[chamberDatasetSelectBy, OptionValue[city]];
+	         
+	         (* Filtering data for the Senate *)
+	         senateDatasetSelectBy = senateDataset;
+	         
+	         senateDatasetSelectBy = FilterLastName[senateDatasetSelectBy, surname];
+	         senateDatasetSelectBy = FilterFirstName[senateDatasetSelectBy, name];
+	         senateDatasetSelectBy = FilterCity[senateDatasetSelectBy, OptionValue[city]];
+	         
+	         If[
+	             Length[chamberDatasetSelectBy] > 0, [
+	                 (* It is sufficient to get the name of the uninominale from the first row since a candidate can only be present in one uninomale. *)
+	                 uninominaleName = chamberDatasetSelectBy[1, "UNINOMINALE"];
+	                 returnDataset = chamberDataset;
+	                 returnDataset = returnDataset[Select[#UNINOMINALE == uninominaleName &];
+	                 returnDataset[ReverseSortBy["VOTISOLOCANDUNINOM"]]
+	                 Return[{returnDataset[All, "COGNOME"], returnDataset[All, "NOME"], returnDataset[All, "VOTISOLOCANDUNINOM"]}]
+	             ], If[ (* Either a candidate is present in the Chamber or in the Senate or in none of the two. *)
+	                 Length[senateDatasetSelectBy] > 0, [
+	                     uninominaleName = senateDatasetSelectBy[1, "UNINOMINALE"];
+	                     returnDataset = senateDataset;
+	                     returnDataset = returnDataset[Select[#UNINOMINALE == uninominaleName &];
+	                     returnDataset[ReverseSortBy["VOTISOLOCANDUNINOM"]]
+	                     Return[{returnDataset[All, "COGNOME"], returnDataset[All, "NOME"], returnDataset[All, "VOTISOLOCANDUNINOM"]}]
+	                 ], []
+	             ]
+	         ];
+	     ]
 End[]
 EndPackage[]
-
-
-
 
 
 
