@@ -48,11 +48,18 @@ Begin["`Private`"]
 	GetChamber[] := chamberDataset
 	
 	(* d is used instead of district because it does not work otherwise *)
-	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ",_}], Take[Characters[d], Length[Characters[d]]-2], d]]
+	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ", _}], Take[Characters[d], Length[Characters[d]]-2], d]]
 	
+	(* Filters the given dataset by the given region *)
 	FilterRegion[dataset_, region_] := If[region === Null, dataset, dataset[Select[#CIRCOSCRIZIONE == region &]]]
+	
+	(* Filters the given dataset by the given province *)
 	FilterProvince[dataset_, province_] := If[province === Null, dataset, dataset[Select[#PROVINCIA == province &]]]
+	
+	(* Filters the given dataset by the given district *)
 	FilterDistrict[dataset_, district_] := If[district === Null, dataset, dataset[Select[#CIRCOSCRIZIONE == district &]]]
+	
+	(* Filters the given dataset by the given query typed by the user *)
 	FilterQuery[dataset_, query_] :=
 		Module [{queries, queryCharacters, qReplaced, params, datasetToReturn},
 			datasetToReturn = If[query === Null, Return[dataset], dataset]; (*Necessary to return the right values*)
@@ -155,6 +162,9 @@ Begin["`Private`"]
 		Return[]
 End[]
 EndPackage[]
+
+
+
 
 
 
