@@ -89,45 +89,48 @@ Begin["`Private`"]
 			Return[datasetToReturn]
 		]
 	
-	PlottingElectionElectorsPie[chamber_, region_: Null, province_: Null, district_: Null, query_: Null] := 
+	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	PlottingElectionElectorsPie[chamber_, opts : OptionsPattern[]] := 
 		Module[{dataset, datasetSelectBy, maleElectors, femaleElectors}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy["COMUNE"]];
 			
-			datasetSelectBy = FilterRegion[datasetSelectBy, region];
-			datasetSelectBy = FilterProvince[datasetSelectBy, province];
-			datasetSelectBy = FilterDistrict[datasetSelectBy, district];
-			datasetSelectBy = FilterQuery[datasetSelectBy, query];
+			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
+			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
+			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
+			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
 			maleElectors = Total[datasetSelectBy[All, "ELETTORIMAS"]];
 			femaleElectors = Total[datasetSelectBy[All, "ELETTORIFEM"]];
 			Return[{maleElectors, femaleElectors}]
 		]
-		
-	PlottingElectionVotersPie[chamber_, region_: Null, province_: Null, district_: Null, query_: Null] :=
+	
+	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	PlottingElectionVotersPie[chamber_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy["COMUNE"]];
 			
-			datasetSelectBy = FilterRegion[datasetSelectBy, region];
-			datasetSelectBy = FilterProvince[datasetSelectBy, province];
-			datasetSelectBy = FilterDistrict[datasetSelectBy, district];
-			datasetSelectBy = FilterQuery[datasetSelectBy, query];
+			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
+			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
+			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
+			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
 			maleVoters = Total[datasetSelectBy[All, "VOTANTIMAS"]];
 			femaleVoters = Total[datasetSelectBy[All, "VOTANTIFEM"]];
 			Return[{maleVoters, femaleVoters}]
 		]
 		
-	PlottingElectionVotersNonVotersPie[chamber_, region_: Null, province_: Null, district_: Null, query_: Null] :=
+	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	PlottingElectionVotersNonVotersPie[chamber_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters, maleElectors, femaleElectors}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy["COMUNE"]];
 			
-			datasetSelectBy = FilterRegion[datasetSelectBy, region];
-			datasetSelectBy = FilterProvince[datasetSelectBy, province];
-			datasetSelectBy = FilterDistrict[datasetSelectBy, district];
-			datasetSelectBy = FilterQuery[datasetSelectBy, query];
+			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
+			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
+			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
+			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
 			maleElectors = Total[datasetSelectBy[All, "ELETTORIMAS"]];
 			femaleElectors = Total[datasetSelectBy[All, "ELETTORIFEM"]];
@@ -137,15 +140,17 @@ Begin["`Private`"]
 			Return[{maleVoters, femaleVoters, maleElectors-maleVoters, femaleElectors-femaleVoters}]
 		]
 		
-	PlottingElectionRegionCoalitionsBars[chamber_, coalition_, region_: Null, province_: Null, district_: Null, query_: Null] :=
+	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	PlottingElectionRegionCoalitionsBars[chamber_, coalition_, opts : OptionsPattern[]] :=
 		Module[{dataset, parties, datasetSelectBy}, 
 			dataset = If[chamber === "camera", chamberDataset, senateDataset];
 			parties = If[chamber === "camera", coalitionsChamber[[coalition]], coalitionsSenate[[coalition]]];
 			datasetSelectBy = dataset;			
-			datasetSelectBy = FilterRegion[datasetSelectBy, region];
-			datasetSelectBy = FilterProvince[datasetSelectBy, province];
-			datasetSelectBy = FilterDistrict[datasetSelectBy, district];
-			datasetSelectBy = FilterQuery[datasetSelectBy, query];
+			
+			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
+			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
+			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
+			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
 			(*
 			Do[
@@ -157,8 +162,9 @@ Begin["`Private`"]
 			
 			Table[Total[datasetSelectBy[Select[GetRegionFromDistrict[#CIRCOSCRIZIONE] == r&]][Select[MemberQ[parties, #LISTA] &]][All, "VOTICANDUNINOM"]], {r, regions}]
 		]
-
-	PlottingCandidate[name_, surname_, city_: Null] :=
+		
+	Options[PlottingElectionElectorsPie] = {city -> Null};
+	PlottingCandidate[name_, surname_, opts : OptionsPattern[]] :=
 		Return[]
 End[]
 EndPackage[]
