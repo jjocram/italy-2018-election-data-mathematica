@@ -6,7 +6,7 @@
 (* :Summary: Package for analysing the 2018 Italian political election data published by the the Ministry of the Interior. *)
 (* :Copyright : MIT *)
 (* :Package Version : 1 *)
-(* :Mathematica Version : 12.2*)
+(* :Mathematica Versionfile : 12.2*)
 (* :History : *)
 (* :Keywords : italy, election, 2018, data, analysis*)
 (* :Sources : https://github.com/jjocram/italy-2018-election-data-mathematica *)
@@ -22,17 +22,47 @@ GetChamber::usage = "DEV TOOL GetChamber[] return the chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
 
 Begin["`Private`"]
-	InitDataset[url_] :=
-		Module[{file, stringReplaced},
-			file = URLDownload[url];
-			stringReplaced = StringReplace[ReadString[file], ";"->","];
-			Return[ImportString[stringReplaced, "Dataset", HeaderLines->1]];
+	(* Initializes a dataset for a given year and for a given chamber, downloading it if it does not exist, reading it from the cache otherwise. *)
+	InitDataset[year_, chamber_] :=
+		Module[{file, readString, importedDS, cache, url},
+			readString = "";
+			cache = datasets[[year]][[chamber]][["cache"]];
+			url = datasets[[year]][[chamber]][["url"]];
+			If[
+				FileExistsQ[cache],
+				(
+					readString = ReadString[cache];
+					importedDS = ImportString[readString, "Dataset", HeaderLines->1];
+				),
+				(
+					file = URLDownload[url];
+					readString = StringReplace[ReadString[file], ";"->","];
+					importedDS = ImportString[readString, "Dataset", HeaderLines->1];
+					Export[cache, importedDS, "CSV"];
+				)
+			];
+			
+			Return[importedDS];
 		]
 	
+	(* Collection of dataset references (for future updates). *)
+	datasets = Association[
+		"2018" -> Association[
+			"chamberofdeputies" -> Association[
+				"url" -> "https://dait.interno.gov.it/documenti/camera_2018_scrutini_italia.csv",
+				"cache" -> "camera_2018_scrutini_italia.csv"
+			],
+			"senateoftherepublic" -> Association[
+				"url" -> "https://dait.interno.gov.it/documenti/senato_2018_scrutini_italia.csv",
+				"cache" -> "senato_2018_scrutini_italia.csv"
+			]
+		]
+	];
+	
 	(* Original election dataset for the Chamber of Deputies (Camera dei Deputati) from the open data website of the Ministry of the Interior. *)
-	chamberDataset = InitDataset["https://dait.interno.gov.it/documenti/camera_2018_scrutini_italia.csv"];
+	chamberDataset = InitDataset["2018", "chamberofdeputies"];
 	(* Original election dataset for the Senate of the Republic (Senato della Repubblica) from the open data website of the Ministry of the Interior. *)
-	senateDataset = InitDataset["https://dait.interno.gov.it/documenti/senato_2018_scrutini_italia.csv"];
+	senateDataset = InitDataset["2018", "senateoftherepublic"];
 	
 	(* The following two maps are not representative of the official coalitions that were present during the 2018 elections. They are a simplified version: left parties are put on the "SINISTRA" value, right parties are put on the "DESTRA" value, center and/or miscellanea are put on the "CENTRO" value. *)
 	coalitionsChamber = Association[
@@ -257,6 +287,9 @@ Begin["`Private`"]
 	     ]
 End[]
 EndPackage[]
+
+
+
 
 
 
