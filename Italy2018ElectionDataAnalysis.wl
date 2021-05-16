@@ -134,8 +134,8 @@ Begin["`Private`"]
 	ENLBLFEMALEELECTORS = "Female electors";
 	ENLBLMALEVOTERS = "Male voters";
 	ENLBLFEMALEVOTERS = "Female voters";
-	ENLBLMALENONVOTERS = "Male non-voters";
-	ENLBLFEMALENONVOTERS = "Female non-voters";
+	ENLBLMALENONVOTERS = "Male\nnon-voters";
+	ENLBLFEMALENONVOTERS = "Female\nnon-voters";
 	(* Italian labels *)
 	ITLBLMALEELECTORS = "Elettori maschi";
 	ITLBLFEMALEELECTORS = "Elettori femmine";
@@ -267,7 +267,10 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionElectorsPie[house, opts], ChartLegends->{ENLBLMALEELECTORS, ENLBLFEMALEELECTORS}, ChartStyle->{Blue, Red}]
+	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionElectorsPie[house, opts],
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionElectorsPie[house_, opts : OptionsPattern[]] := 
@@ -290,7 +293,10 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionVotersPie[house, opts], ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}, ChartStyle->{Blue, Red}]
+	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionVotersPie[house, opts],
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersPie[house_, opts : OptionsPattern[]] :=
@@ -313,7 +319,11 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionVotersNonVotersPie[house, opts], ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
+	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionVotersNonVotersPie[house, opts],		
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}}, {"RadialCallout"}],
+			(* ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, *)
+			ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
 			
 	Options[GetElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
