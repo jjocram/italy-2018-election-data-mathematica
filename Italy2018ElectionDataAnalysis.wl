@@ -21,6 +21,7 @@ PlottingElectionElectorsPie::usage = "PlottingElectionElectorsPie[house, region:
 PlottingElectionVotersPie::usage = "PlottingElectionVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters pie chart."
 PlottingElectionVotersNonVotersPie::usage = "PlottingElectionVotersNonVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters and non voters pie chart."
 PlottingElectionRegionCoalitionsBars::usage = "PlottingElectionRegionCoalitionsBars[house, coalition, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot in each region the winning coalition."
+PlottingElectionRegionCoalitionsBars3D::usage = ""
 PlottingCandidate::usage = "PlottingCandidate[name, surname, city: Null] returns a list of data to plot the histogram for the candidate."
 GetChamber::usage = "DEV TOOL GetChamber[] return the Chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
@@ -347,6 +348,25 @@ Begin["`Private`"]
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
 			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", "ValentineTones"}, {"Centro","SiennaTones"}, {"Destra", "AvocadoColors"}}];
 			Return[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}]]
+		]
+		
+	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
+	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
+		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graph3D},
+			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
+			temp = GetElectionRegionCoalitionsBars[ChamberOfDeputies, "Centro"];
+			(* Sia GetElectionRegionCoalitionsBars che Entity considerano le regioni ordinate in maniera alfabetica: tuttavia, la 1\[Degree]
+			funzione usa i nomi italiani, la 2\[Degree] i nomi inglesi, per cui \[EGrave] necessaria un sorto solo per "Apulia" = "Puglia" *)
+			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];
+			centralCoordinates = Reverse /@ EntityValue[regions, EntityProperty["AdministrativeDivision", "Coordinates"]];
+			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
+			Return[
+				Table[
+				{coord3D = Partition[
+					Flatten[
+						Transpose@{centralCoordinates, GetElectionRegionCoalitionsBars[ChamberOfDeputies, coalitions]/1000000}], 3];
+				graphBar3D = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False]},
+				{coalitions, {"Sinistra",  "Centro", "Destra"}}]]
 		]
 	
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
