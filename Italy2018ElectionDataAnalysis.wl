@@ -339,7 +339,7 @@ Begin["`Private`"]
 		]
 
 
-	pairUp[xValues_,y Values_] := ({xValues[[#]], yValues[[#]]})&/@Range[Min[Length[xValues], Length[yValues]]];
+	pairUp[xValues_, yValues_] := ({xValues[[#]], yValues[[#]]})&/@Range[Min[Length[xValues], Length[yValues]]];
 	
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars[house_, opts : OptionsPattern[]] :=
@@ -352,7 +352,7 @@ Begin["`Private`"]
 		
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
-		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graph3D},
+		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3D},
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
 			temp = GetElectionRegionCoalitionsBars[ChamberOfDeputies, "Centro"];
 			(* Sia GetElectionRegionCoalitionsBars che Entity considerano le regioni ordinate in maniera alfabetica: tuttavia, la 1\[Degree]
