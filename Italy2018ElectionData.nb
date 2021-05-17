@@ -10,28 +10,203 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[   4056262,      69008]
-NotebookOptionsPosition[   4051912,      68923]
-NotebookOutlinePosition[   4052439,      68942]
-CellTagsIndexPosition[   4052396,      68939]
+NotebookDataLength[   4063935,      69186]
+NotebookOptionsPosition[   4059437,      69098]
+NotebookOutlinePosition[   4059966,      69117]
+CellTagsIndexPosition[   4059923,      69114]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+
+Cell[CellGroupData[{
 Cell[BoxData[{
  RowBox[{
   RowBox[{"SetDirectory", "[", 
    RowBox[{"NotebookDirectory", "[", "]"}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"<<", " ", "Italy2018ElectionDataAnalysis.wl"}], ";"}]}], "Input",
+  RowBox[{"<<", " ", "Italy2018ElectionDataAnalysis.wl"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ShowInterface1", "[", "]"}]}], "Input",
  CellChangeTimes->{{3.829382146660511*^9, 3.829382160561987*^9}, 
    3.829383243802903*^9, {3.829383311646247*^9, 3.829383344551388*^9}, {
    3.829383387937789*^9, 3.829383442335832*^9}, {3.8299122669864917`*^9, 
    3.829912268009077*^9}, {3.829914563344532*^9, 3.8299145642948937`*^9}, {
-   3.830108346250623*^9, 3.8301083472662563`*^9}},
+   3.830108346250623*^9, 3.8301083472662563`*^9}, {3.8302737917819185`*^9, 
+   3.8302737940534143`*^9}, {3.830276814844572*^9, 3.8302768157139816`*^9}, 
+   3.830279025881566*^9},
  CellLabel->
-  "In[190]:=",ExpressionUUID->"8d1a8825-42b2-4663-9e53-b0643a0d2112"],
+  "In[117]:=",ExpressionUUID->"b2cb9962-f3ff-4fe4-9c4c-3e08cf55cc1c"],
+
+Cell[BoxData[
+ DynamicModuleBox[{Italy2018ElectionDataAnalysis`Private`form$$ = Panel[
+   Column[{
+     RadioButtonBar[
+      Dynamic[Italy2018ElectionDataAnalysis`Private`house$$], {
+      "Chamber of Deputies", "Senate of the Republic"}], 
+     Row[{
+       Style["Region  \t"], 
+       PopupMenu[
+        Dynamic[Italy2018ElectionDataAnalysis`Private`region$$], {
+        "ALL", "ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA", 
+         "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO", "LIGURIA", 
+         "LOMBARDIA", "MARCHE", "MOLISE", "PIEMONTE", "PUGLIA", "SARDEGNA", 
+         "SICILIA", "TOSCANA", "TRENTINO-ALTO ADIGE", "UMBRIA", 
+         "VALLE D'AOSTA", "VENETO"}, FieldSize -> Medium]}], 
+     Row[{
+       Style["Province\t"], 
+       Dynamic[
+        PopupMenu[
+         Dynamic[Italy2018ElectionDataAnalysis`Private`province$$], 
+         If[Italy2018ElectionDataAnalysis`Private`region$$ === "ALL", 
+          Join[{"ALL"}, Italy2018ElectionDataAnalysis`Private`PROVINCES], 
+          Join[{"ALL"}, 
+           Part[
+           Italy2018ElectionDataAnalysis`Private`PROVINCESBYREGION, 
+            Italy2018ElectionDataAnalysis`Private`region$$]]], FieldSize -> 
+         Medium]]}], 
+     Row[{
+       Style["District  \t"], 
+       Dynamic[
+        PopupMenu[
+         Dynamic[Italy2018ElectionDataAnalysis`Private`district$$], 
+         If[Italy2018ElectionDataAnalysis`Private`region$$ === "ALL", 
+          Join[{"ALL"}, Italy2018ElectionDataAnalysis`Private`DISTRICTS], 
+          Join[{"ALL"}, 
+           Part[
+           Italy2018ElectionDataAnalysis`Private`DISTRICTSBYREGION, 
+            Italy2018ElectionDataAnalysis`Private`region$$]]], FieldSize -> 
+         Medium]]}], 
+     Row[{
+       Style["Query\t"], 
+       InputField[
+        Dynamic[Italy2018ElectionDataAnalysis`Private`query$$], String, 
+        FieldSize -> Medium]}]}, Center]], 
+  Italy2018ElectionDataAnalysis`Private`house$$ = "Chamber of Deputies", 
+  Italy2018ElectionDataAnalysis`Private`region$$ = "ALL", 
+  Italy2018ElectionDataAnalysis`Private`province$$ = "ALL", 
+  Italy2018ElectionDataAnalysis`Private`district$$ = "ALL", 
+  Italy2018ElectionDataAnalysis`Private`query$$}, 
+  PanelBox[
+   TagBox[GridBox[{
+      {
+       InterpretationBox[
+        StyleBox[
+         RowBox[{GridBox[{
+            {
+             
+             RadioButtonBox[Dynamic[
+              Italy2018ElectionDataAnalysis`Private`house$$], {
+              "Chamber of Deputies"},
+              DefaultBaseStyle->"RadioButtonBar"], 
+             StyleBox["\<\"Chamber of Deputies\"\>", "RadioButtonBarLabel",
+              StripOnInput->False]}
+           },
+           AutoDelete->False,
+           BaselinePosition->{1, 2},
+           GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+           
+           GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+           GridBoxSpacings->{"Columns" -> {
+               Offset[0.27999999999999997`], {
+                Offset[0.21]}, 
+               Offset[0.27999999999999997`]}, "Rows" -> {
+               Offset[0.2], {
+                Offset[0.4]}, 
+               Offset[0.2]}}], "  ", GridBox[{
+            {
+             
+             RadioButtonBox[Dynamic[
+              Italy2018ElectionDataAnalysis`Private`house$$], {
+              "Senate of the Republic"},
+              DefaultBaseStyle->"RadioButtonBar"], 
+             StyleBox["\<\"Senate of the Republic\"\>", "RadioButtonBarLabel",
+              StripOnInput->False]}
+           },
+           AutoDelete->False,
+           BaselinePosition->{1, 2},
+           GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+           
+           GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+           GridBoxSpacings->{"Columns" -> {
+               Offset[0.27999999999999997`], {
+                Offset[0.21]}, 
+               Offset[0.27999999999999997`]}, "Rows" -> {
+               Offset[0.2], {
+                Offset[0.4]}, 
+               Offset[0.2]}}]}], "Deploy"],
+        RadioButtonBar[
+         Dynamic[Italy2018ElectionDataAnalysis`Private`house$$], {
+         "Chamber of Deputies", "Senate of the Republic"}]]},
+      {
+       TemplateBox[{
+         StyleBox["\"Region  \\t\"", StripOnInput -> False], 
+         PopupMenuBox[
+          Dynamic[Italy2018ElectionDataAnalysis`Private`region$$], {
+          "ALL" -> "\"ALL\"", "ABRUZZO" -> "\"ABRUZZO\"", "BASILICATA" -> 
+           "\"BASILICATA\"", "CALABRIA" -> "\"CALABRIA\"", "CAMPANIA" -> 
+           "\"CAMPANIA\"", "EMILIA-ROMAGNA" -> "\"EMILIA-ROMAGNA\"", 
+           "FRIULI-VENEZIA GIULIA" -> "\"FRIULI-VENEZIA GIULIA\"", "LAZIO" -> 
+           "\"LAZIO\"", "LIGURIA" -> "\"LIGURIA\"", "LOMBARDIA" -> 
+           "\"LOMBARDIA\"", "MARCHE" -> "\"MARCHE\"", "MOLISE" -> 
+           "\"MOLISE\"", "PIEMONTE" -> "\"PIEMONTE\"", "PUGLIA" -> 
+           "\"PUGLIA\"", "SARDEGNA" -> "\"SARDEGNA\"", "SICILIA" -> 
+           "\"SICILIA\"", "TOSCANA" -> "\"TOSCANA\"", "TRENTINO-ALTO ADIGE" -> 
+           "\"TRENTINO-ALTO ADIGE\"", "UMBRIA" -> "\"UMBRIA\"", 
+           "VALLE D'AOSTA" -> "\"VALLE D'AOSTA\"", "VENETO" -> "\"VENETO\""}, 
+          FieldSize -> Medium]},
+        "RowDefault"]},
+      {
+       TemplateBox[{
+         StyleBox["\"Province\\t\"", StripOnInput -> False], 
+         DynamicBox[
+          ToBoxes[
+           PopupMenu[
+            Dynamic[Italy2018ElectionDataAnalysis`Private`province$$], 
+            If[Italy2018ElectionDataAnalysis`Private`region$$ === "ALL", 
+             Join[{"ALL"}, Italy2018ElectionDataAnalysis`Private`PROVINCES], 
+             Join[{"ALL"}, 
+              Part[
+              Italy2018ElectionDataAnalysis`Private`PROVINCESBYREGION, 
+               Italy2018ElectionDataAnalysis`Private`region$$]]], FieldSize -> 
+            Medium], StandardForm]]},
+        "RowDefault"]},
+      {
+       TemplateBox[{
+         StyleBox["\"District  \\t\"", StripOnInput -> False], 
+         DynamicBox[
+          ToBoxes[
+           PopupMenu[
+            Dynamic[Italy2018ElectionDataAnalysis`Private`district$$], 
+            If[Italy2018ElectionDataAnalysis`Private`region$$ === "ALL", 
+             Join[{"ALL"}, Italy2018ElectionDataAnalysis`Private`DISTRICTS], 
+             Join[{"ALL"}, 
+              Part[
+              Italy2018ElectionDataAnalysis`Private`DISTRICTSBYREGION, 
+               Italy2018ElectionDataAnalysis`Private`region$$]]], FieldSize -> 
+            Medium], StandardForm]]},
+        "RowDefault"]},
+      {
+       TemplateBox[{
+         StyleBox["\"Query\\t\"", StripOnInput -> False], 
+         InputFieldBox[
+          Dynamic[Italy2018ElectionDataAnalysis`Private`query$$], String, 
+          FieldSize -> Medium]},
+        "RowDefault"]}
+     },
+     DefaultBaseStyle->"Column",
+     GridBoxAlignment->{"Columns" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Column"]],
+  DynamicModuleValues:>{}]], "Output",
+ CellChangeTimes->{{3.8302788764418516`*^9, 3.830278902008089*^9}, {
+   3.8302789350726967`*^9, 3.8302789569228764`*^9}, 3.830279037029755*^9},
+ CellLabel->
+  "Out[119]=",ExpressionUUID->"0fc3d3ed-882d-4733-b66d-baf0fe71c95e"]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -39,7 +214,7 @@ Cell[BoxData[
  RowBox[{
   RowBox[{"LoadDataByYear", "[", "\"\<2014\>\"", "]"}], ";"}]], "Input",
  CellChangeTimes->{{3.8301049013690553`*^9, 3.83010490774222*^9}},
- CellLabel->"In[90]:=",ExpressionUUID->"175103c4-124a-4dbb-bfe6-76ca66a9a1b3"],
+ CellLabel->"In[3]:=",ExpressionUUID->"175103c4-124a-4dbb-bfe6-76ca66a9a1b3"],
 
 Cell[CellGroupData[{
 
@@ -58,10 +233,10 @@ Cell[BoxData[
   3.830104908507824*^9, {3.830104997895319*^9, 3.830105028169488*^9}, 
    3.830107150953845*^9, 3.830107377834258*^9, 3.830107688902046*^9, 
    3.8301077632380133`*^9, 3.830107913078709*^9, {3.8301089037540855`*^9, 
-   3.8301089329335175`*^9}, 3.8301826450112348`*^9},
+   3.8301089329335175`*^9}, 3.8301826450112348`*^9, 3.8302677112888165`*^9},
  CellLabel->
   "During evaluation of \
-In[90]:=",ExpressionUUID->"0a6aa0e1-0709-4001-956b-1ce81bd2d8fe"],
+In[3]:=",ExpressionUUID->"72d91aac-a6ef-4a74-9df3-0e4f115f44ad"],
 
 Cell[BoxData[
  InterpretationBox[
@@ -78,10 +253,10 @@ Cell[BoxData[
   3.830104908507824*^9, {3.830104997895319*^9, 3.830105028169488*^9}, 
    3.830107150953845*^9, 3.830107377834258*^9, 3.830107688902046*^9, 
    3.8301077632380133`*^9, 3.830107913078709*^9, {3.8301089037540855`*^9, 
-   3.8301089329335175`*^9}, 3.8301826450112348`*^9},
+   3.8301089329335175`*^9}, 3.8301826450112348`*^9, 3.830267711292745*^9},
  CellLabel->
   "During evaluation of \
-In[90]:=",ExpressionUUID->"6f6dfa2d-33c9-4345-9272-dd4b512af726"]
+In[3]:=",ExpressionUUID->"04eeccaf-9af4-42f8-bc91-1351ecf7c5e6"]
 }, Open  ]]
 }, Open  ]],
 
@@ -92,71 +267,71 @@ Cell[BoxData[
   RowBox[{"LoadDataByYear", "[", "\"\<2018\>\"", "]"}], ";"}]], "Input",
  CellChangeTimes->{{3.8301047309487247`*^9, 3.830104737478376*^9}, {
   3.830104843143528*^9, 3.83010484384665*^9}},
- CellLabel->"In[91]:=",ExpressionUUID->"806e8d89-88b3-4b03-bec0-a4795e29f600"],
+ CellLabel->"In[4]:=",ExpressionUUID->"806e8d89-88b3-4b03-bec0-a4795e29f600"],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  InterpretationBox[
-  RowBox[{"\<\"Downloading the \"\>", "\[InvisibleSpace]", "\<\"2018\"\>", 
+  RowBox[{"\<\"Loading the \"\>", "\[InvisibleSpace]", "\<\"2018\"\>", 
    "\[InvisibleSpace]", "\<\" \"\>", 
    "\[InvisibleSpace]", "\<\"Chamber of Deputies\"\>", 
-   "\[InvisibleSpace]", "\<\" dataset from the internet...\"\>"}],
+   "\[InvisibleSpace]", "\<\" dataset from cache...\"\>"}],
   SequenceForm[
-  "Downloading the ", "2018", " ", "Chamber of Deputies", 
-   " dataset from the internet..."],
+  "Loading the ", "2018", " ", "Chamber of Deputies", 
+   " dataset from cache..."],
   Editable->False]], "Print",
  CellChangeTimes->{
   3.8301047458376236`*^9, 3.8301047798424826`*^9, 3.830104848708444*^9, 
    3.830105030637882*^9, 3.8301071526100764`*^9, 3.830107379084259*^9, 
    3.830107459245666*^9, 3.830107690277041*^9, 3.8301077647067566`*^9, 
    3.8301078325918446`*^9, 3.830107916079419*^9, {3.8301089050978384`*^9, 
-   3.830108934667885*^9}, 3.8301826474644938`*^9},
+   3.830108934667885*^9}, 3.8301826474644938`*^9, 3.8302677125444036`*^9},
  CellLabel->
   "During evaluation of \
-In[91]:=",ExpressionUUID->"6b02c3f4-fcec-4ac0-93fa-b91ec6e409b1"],
+In[4]:=",ExpressionUUID->"d3c3b844-2f0d-4573-808a-3eb216846517"],
 
-Cell[BoxData["\<\"...downloaded and cached!\"\>"], "Print",
+Cell[BoxData["\<\"...loaded!\"\>"], "Print",
  CellChangeTimes->{
   3.8301047458376236`*^9, 3.8301047798424826`*^9, 3.830104848708444*^9, 
    3.830105030637882*^9, 3.8301071526100764`*^9, 3.830107379084259*^9, 
    3.830107459245666*^9, 3.830107690277041*^9, 3.8301077647067566`*^9, 
    3.8301078325918446`*^9, 3.830107916079419*^9, {3.8301089050978384`*^9, 
-   3.830108934667885*^9}, 3.830182674619751*^9},
+   3.830108934667885*^9}, 3.8301826474644938`*^9, 3.8302677189179688`*^9},
  CellLabel->
   "During evaluation of \
-In[91]:=",ExpressionUUID->"1906c16d-7620-426b-a9e2-fcadcd428b43"],
+In[4]:=",ExpressionUUID->"e44dfd7c-eb97-4a7e-aed9-33513b9fd28a"],
 
 Cell[BoxData[
  InterpretationBox[
-  RowBox[{"\<\"Downloading the \"\>", "\[InvisibleSpace]", "\<\"2018\"\>", 
+  RowBox[{"\<\"Loading the \"\>", "\[InvisibleSpace]", "\<\"2018\"\>", 
    "\[InvisibleSpace]", "\<\" \"\>", 
    "\[InvisibleSpace]", "\<\"Senate of the Republic\"\>", 
-   "\[InvisibleSpace]", "\<\" dataset from the internet...\"\>"}],
+   "\[InvisibleSpace]", "\<\" dataset from cache...\"\>"}],
   SequenceForm[
-  "Downloading the ", "2018", " ", "Senate of the Republic", 
-   " dataset from the internet..."],
+  "Loading the ", "2018", " ", "Senate of the Republic", 
+   " dataset from cache..."],
   Editable->False]], "Print",
  CellChangeTimes->{
   3.8301047458376236`*^9, 3.8301047798424826`*^9, 3.830104848708444*^9, 
    3.830105030637882*^9, 3.8301071526100764`*^9, 3.830107379084259*^9, 
    3.830107459245666*^9, 3.830107690277041*^9, 3.8301077647067566`*^9, 
    3.8301078325918446`*^9, 3.830107916079419*^9, {3.8301089050978384`*^9, 
-   3.830108934667885*^9}, 3.8301826746262646`*^9},
+   3.830108934667885*^9}, 3.8301826474644938`*^9, 3.83026771892197*^9},
  CellLabel->
   "During evaluation of \
-In[91]:=",ExpressionUUID->"8007e0dd-ed4d-4ca9-baa4-6fb4665a7a58"],
+In[4]:=",ExpressionUUID->"d8052e10-24e4-4e27-8d8b-65ed7f0c09fd"],
 
-Cell[BoxData["\<\"...downloaded and cached!\"\>"], "Print",
+Cell[BoxData["\<\"...loaded!\"\>"], "Print",
  CellChangeTimes->{
   3.8301047458376236`*^9, 3.8301047798424826`*^9, 3.830104848708444*^9, 
    3.830105030637882*^9, 3.8301071526100764`*^9, 3.830107379084259*^9, 
    3.830107459245666*^9, 3.830107690277041*^9, 3.8301077647067566`*^9, 
    3.8301078325918446`*^9, 3.830107916079419*^9, {3.8301089050978384`*^9, 
-   3.830108934667885*^9}, 3.8301826969816055`*^9},
+   3.830108934667885*^9}, 3.8301826474644938`*^9, 3.83026772422097*^9},
  CellLabel->
   "During evaluation of \
-In[91]:=",ExpressionUUID->"94e5cd6d-b764-483a-9bb6-e070f7e41f56"]
+In[4]:=",ExpressionUUID->"51883e1f-3355-42e0-92ff-893e529a07df"]
 }, Open  ]]
 }, Open  ]],
 
@@ -68922,7 +69097,7 @@ Cell[BoxData[
 }, Open  ]]
 },
 WindowSize->{1920, 997},
-WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+WindowMargins->{{1912, Automatic}, {Automatic, -8}},
 TaggingRules->{
  "WelcomeScreenSettings" -> {"FEStarting" -> True}, "TryRealOnly" -> False},
 Magnification:>1.25 Inherited,
@@ -68941,74 +69116,77 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[558, 20, 651, 13, 60, "Input",ExpressionUUID->"8d1a8825-42b2-4663-9e53-b0643a0d2112"],
 Cell[CellGroupData[{
-Cell[1234, 37, 242, 4, 35, "Input",ExpressionUUID->"175103c4-124a-4dbb-bfe6-76ca66a9a1b3"],
+Cell[580, 22, 845, 17, 84, "Input",ExpressionUUID->"b2cb9962-f3ff-4fe4-9c4c-3e08cf55cc1c"],
+Cell[1428, 41, 7238, 166, 221, "Output",ExpressionUUID->"0fc3d3ed-882d-4733-b66d-baf0fe71c95e"]
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[1501, 45, 806, 18, 28, "Print",ExpressionUUID->"0a6aa0e1-0709-4001-956b-1ce81bd2d8fe"],
-Cell[2310, 65, 812, 18, 28, "Print",ExpressionUUID->"6f6dfa2d-33c9-4345-9272-dd4b512af726"]
+Cell[8703, 212, 241, 4, 35, "Input",ExpressionUUID->"175103c4-124a-4dbb-bfe6-76ca66a9a1b3"],
+Cell[CellGroupData[{
+Cell[8969, 220, 829, 18, 28, "Print",ExpressionUUID->"72d91aac-a6ef-4a74-9df3-0e4f115f44ad"],
+Cell[9801, 240, 833, 18, 28, "Print",ExpressionUUID->"04eeccaf-9af4-42f8-bc91-1351ecf7c5e6"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3171, 89, 291, 5, 35, "Input",ExpressionUUID->"806e8d89-88b3-4b03-bec0-a4795e29f600"],
+Cell[10683, 264, 290, 5, 35, "Input",ExpressionUUID->"806e8d89-88b3-4b03-bec0-a4795e29f600"],
 Cell[CellGroupData[{
-Cell[3487, 98, 880, 18, 28, "Print",ExpressionUUID->"6b02c3f4-fcec-4ac0-93fa-b91ec6e409b1"],
-Cell[4370, 118, 525, 9, 28, "Print",ExpressionUUID->"1906c16d-7620-426b-a9e2-fcadcd428b43"],
-Cell[4898, 129, 886, 18, 28, "Print",ExpressionUUID->"8007e0dd-ed4d-4ca9-baa4-6fb4665a7a58"],
-Cell[5787, 149, 527, 9, 28, "Print",ExpressionUUID->"94e5cd6d-b764-483a-9bb6-e070f7e41f56"]
+Cell[10998, 273, 881, 18, 28, "Print",ExpressionUUID->"d3c3b844-2f0d-4573-808a-3eb216846517"],
+Cell[11882, 293, 535, 9, 28, "Print",ExpressionUUID->"e44dfd7c-eb97-4a7e-aed9-33513b9fd28a"],
+Cell[12420, 304, 884, 18, 28, "Print",ExpressionUUID->"d8052e10-24e4-4e27-8d8b-65ed7f0c09fd"],
+Cell[13307, 324, 532, 9, 28, "Print",ExpressionUUID->"51883e1f-3355-42e0-92ff-893e529a07df"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6363, 164, 240, 3, 35, "Input",ExpressionUUID->"c453ec87-e13f-4277-91f8-12fc2c2024b4"],
-Cell[6606, 169, 326, 5, 40, "Output",ExpressionUUID->"18ef64fb-044a-4bd5-aa66-afcfe9786caa"]
+Cell[13888, 339, 240, 3, 35, "Input",ExpressionUUID->"c453ec87-e13f-4277-91f8-12fc2c2024b4"],
+Cell[14131, 344, 326, 5, 40, "Output",ExpressionUUID->"18ef64fb-044a-4bd5-aa66-afcfe9786caa"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6969, 179, 194, 2, 35, "Input",ExpressionUUID->"edceae8d-951c-45e5-835c-15fcacb47d57"],
-Cell[7166, 183, 250, 3, 40, "Output",ExpressionUUID->"cf8f0096-d7a6-431d-bb75-f71b086a0714"]
+Cell[14494, 354, 194, 2, 35, "Input",ExpressionUUID->"edceae8d-951c-45e5-835c-15fcacb47d57"],
+Cell[14691, 358, 250, 3, 40, "Output",ExpressionUUID->"cf8f0096-d7a6-431d-bb75-f71b086a0714"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7453, 191, 1317, 19, 35, "Input",ExpressionUUID->"d7a8c431-630c-45af-85ce-8fbc6eafa9ee"],
-Cell[8773, 212, 19774, 413, 473, "Output",ExpressionUUID->"ca42cb1d-63e0-405e-98ba-b44b1e807ff7"]
+Cell[14978, 366, 1317, 19, 35, "Input",ExpressionUUID->"d7a8c431-630c-45af-85ce-8fbc6eafa9ee"],
+Cell[16298, 387, 19774, 413, 473, "Output",ExpressionUUID->"ca42cb1d-63e0-405e-98ba-b44b1e807ff7"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[28584, 630, 295, 5, 35, "Input",ExpressionUUID->"9b7bc4a6-135f-409d-bb77-b67a4d2550a5"],
-Cell[28882, 637, 19426, 408, 473, "Output",ExpressionUUID->"2e2edc48-8816-424b-a427-1fe8a3e466ac"]
+Cell[36109, 805, 295, 5, 35, "Input",ExpressionUUID->"9b7bc4a6-135f-409d-bb77-b67a4d2550a5"],
+Cell[36407, 812, 19426, 408, 473, "Output",ExpressionUUID->"2e2edc48-8816-424b-a427-1fe8a3e466ac"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[48345, 1050, 614, 9, 35, "Input",ExpressionUUID->"12ecc51f-5245-402c-b360-ef9ef788b727"],
-Cell[48962, 1061, 19404, 405, 473, "Output",ExpressionUUID->"51564dfc-8d25-457f-9ff1-2bdea4116b17"]
+Cell[55870, 1225, 614, 9, 35, "Input",ExpressionUUID->"12ecc51f-5245-402c-b360-ef9ef788b727"],
+Cell[56487, 1236, 19404, 405, 473, "Output",ExpressionUUID->"51564dfc-8d25-457f-9ff1-2bdea4116b17"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[68403, 1471, 403, 6, 35, "Input",ExpressionUUID->"08e8659e-aa84-4fae-95ee-9d4f802ba7f4"],
-Cell[68809, 1479, 35937, 748, 473, "Output",ExpressionUUID->"5df0b894-c6d0-465d-ad7c-6a33f4765de1"]
+Cell[75928, 1646, 403, 6, 35, "Input",ExpressionUUID->"08e8659e-aa84-4fae-95ee-9d4f802ba7f4"],
+Cell[76334, 1654, 35937, 748, 473, "Output",ExpressionUUID->"5df0b894-c6d0-465d-ad7c-6a33f4765de1"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[104783, 2232, 257, 4, 35, "Input",ExpressionUUID->"6112cf76-bdc2-44b6-9f34-a65633f5716a"],
-Cell[105043, 2238, 35582, 742, 473, "Output",ExpressionUUID->"8b766d50-8360-43bb-b141-6d0ad1a7b23c"]
+Cell[112308, 2407, 257, 4, 35, "Input",ExpressionUUID->"6112cf76-bdc2-44b6-9f34-a65633f5716a"],
+Cell[112568, 2413, 35582, 742, 473, "Output",ExpressionUUID->"8b766d50-8360-43bb-b141-6d0ad1a7b23c"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[140662, 2985, 900, 14, 35, "Input",ExpressionUUID->"3723de93-b25b-4dc5-9298-e670f78bb1e5"],
-Cell[141565, 3001, 1920435, 32266, 286, "Output",ExpressionUUID->"9e9944f4-7d61-4daa-958b-c8424fe8ad03"]
+Cell[148187, 3160, 900, 14, 35, "Input",ExpressionUUID->"3723de93-b25b-4dc5-9298-e670f78bb1e5"],
+Cell[149090, 3176, 1920435, 32266, 286, "Output",ExpressionUUID->"9e9944f4-7d61-4daa-958b-c8424fe8ad03"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2062037, 35272, 261, 5, 35, "Input",ExpressionUUID->"e09470cd-fd3a-4451-bd31-356a9736bfb2"],
-Cell[2062301, 35279, 1918941, 32238, 286, "Output",ExpressionUUID->"12f00cad-db94-4594-a7ec-e7f0c209f369"]
+Cell[2069562, 35447, 261, 5, 35, "Input",ExpressionUUID->"e09470cd-fd3a-4451-bd31-356a9736bfb2"],
+Cell[2069826, 35454, 1918941, 32238, 286, "Output",ExpressionUUID->"12f00cad-db94-4594-a7ec-e7f0c209f369"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3981279, 67522, 263, 5, 35, "Input",ExpressionUUID->"38942c0f-8d0b-4e60-9a3c-247b23991c42"],
-Cell[3981545, 67529, 13574, 250, 248, "Output",ExpressionUUID->"db6b02be-cfd7-409f-b471-adb06a3ef343"]
+Cell[3988804, 67697, 263, 5, 35, "Input",ExpressionUUID->"38942c0f-8d0b-4e60-9a3c-247b23991c42"],
+Cell[3989070, 67704, 13574, 250, 248, "Output",ExpressionUUID->"db6b02be-cfd7-409f-b471-adb06a3ef343"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3995156, 67784, 265, 5, 35, "Input",ExpressionUUID->"7cbb0437-669f-4bdb-a4bf-e59d973dd841"],
-Cell[3995424, 67791, 12777, 230, 248, "Output",ExpressionUUID->"b06214e8-15e2-4839-97ea-7229e41ae928"]
+Cell[4002681, 67959, 265, 5, 35, "Input",ExpressionUUID->"7cbb0437-669f-4bdb-a4bf-e59d973dd841"],
+Cell[4002949, 67966, 12777, 230, 248, "Output",ExpressionUUID->"b06214e8-15e2-4839-97ea-7229e41ae928"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4008238, 68026, 744, 12, 35, "Input",ExpressionUUID->"ed48a00f-918b-4604-9ebc-526ef35ae114"],
-Cell[4008985, 68040, 40447, 810, 463, "Output",ExpressionUUID->"84b76af8-9215-42f6-ab5d-77e265557570"]
+Cell[4015763, 68201, 744, 12, 35, "Input",ExpressionUUID->"ed48a00f-918b-4604-9ebc-526ef35ae114"],
+Cell[4016510, 68215, 40447, 810, 463, "Output",ExpressionUUID->"84b76af8-9215-42f6-ab5d-77e265557570"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4049469, 68855, 419, 8, 35, "Input",ExpressionUUID->"d9996d02-5fdb-4251-b316-bea294411fb7"],
-Cell[4049891, 68865, 2005, 55, 457, "Output",ExpressionUUID->"93997db9-bb6a-4a59-90db-3d7d245fd90b"]
+Cell[4056994, 69030, 419, 8, 35, "Input",ExpressionUUID->"d9996d02-5fdb-4251-b316-bea294411fb7"],
+Cell[4057416, 69040, 2005, 55, 457, "Output",ExpressionUUID->"93997db9-bb6a-4a59-90db-3d7d245fd90b"]
 }, Open  ]]
 }
 ]

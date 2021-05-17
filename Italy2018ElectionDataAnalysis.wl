@@ -17,6 +17,7 @@ BeginPackage["Italy2018ElectionDataAnalysis`"]
 
 
 LoadDataByYear::usage = "LoadDataByYear[year] loads the dataset for the year given as input to the function."
+ShowInterface1::usage = ""
 PlottingElectionElectorsPie::usage = "PlottingElectionElectorsPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the electors pie chart."
 PlottingElectionVotersPie::usage = "PlottingElectionVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters pie chart."
 PlottingElectionVotersNonVotersPie::usage = "PlottingElectionVotersNonVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters and non voters pie chart."
@@ -37,7 +38,37 @@ Begin["`Private`"]
 	(* CONSTANTS *)
 	
 	(* Italian regions *)
-	REGIONS = {"ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA", "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO", "LIGURIA", "LOMBARDIA", "MARCHE", "MOLISE", "PIEMONTE", "PUGLIA", "SARDEGNA", "SICILIA", "TOSCANA", "TRENITNO-ALTO ADIGE", "UMBRIA", "VALLE D'AOSTA", "VENETO"};
+	REGIONS = {"ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA", "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO", "LIGURIA", "LOMBARDIA", "MARCHE", "MOLISE", "PIEMONTE", "PUGLIA", "SARDEGNA", "SICILIA", "TOSCANA", "TRENTINO-ALTO ADIGE", "UMBRIA", "VALLE D'AOSTA", "VENETO"};
+	
+	(* Italian provinces *)
+	PROVINCES = Flatten[Values[PROVINCESBYREGION]];
+	
+	(* Regions and their provinces *)
+	PROVINCESBYREGION = Association[
+		"ABRUZZO" -> {"CHIETI", "L'AQUILA", "PESCARA", "TERAMO"},
+		"BASILICATA" -> {"MATERA", "POTENZA"},
+		"CALABRIA" -> {"CATANZARO", "COSENZA", "CROTONE", "REGGIO CALABRIA", "VIBO VALENTIA"},
+		"CAMPANIA" -> {"AVELLINO", "BENEVENTO", "CASERTA", "NAPOLI", "SALERNO"},
+		"EMILIA-ROMAGNA" -> {"BOLOGNA", "FERRARA", "FORLI'-CESENA", "MODENA", "PARMA", "PIACENZA", "REGGIO EMILIA", "RIMINI"},
+		"FRIULI-VENEZIA GIULIA" -> {"GORIZIA", "PORDENONE", "TRIESTE", "UDINE"},
+		"LAZIO" -> {"FROSINONE", "LATINA", "RIETI", "ROMA", "VITERBO"},
+		"LIGURIA" -> {"GENOVA", "IMPERIA", "LA SPEZIA", "SAVONA"},
+		"LOMBARDIA" -> {"BERGAMO", "BRESCIA", "COMO", "CREMONA", "LECCO", "LODI", "MANTOVA", "MILANO", "MONZA E DELLA BRIANZA", "PAVIA", "PAVIA", "SONDRIO", "VARESE"},
+		"MARCHE" -> {"ANCONA", "ASCOLI PICENO", "FERMO", "MACERATA", "PESARO E URBINO"},
+		"MOLISE" -> {"CAMPOBASSO", "ISERNIA"},
+		"PIEMONTE" -> {"ALESSANDRIA", "ASTI", "BIELLA", "CUNEO", "NOVARA", "TORINO", "VERBANO-CUSIO-OSSOLA", "VERCELLI"},
+		"PUGLIA" -> {"BARI", "BARLETTA-ANDRIA-TRANI", "BRINDISI", "FOGGIA", "LECCE", "TARANTO"},
+		"SARDEGNA" -> {"CAGLIARI", "NUORO", "ORISTANO", "SASSARI", "SUD SARDEGNA"},
+		"SICILIA" -> {"AGRIGENTO", "CALTANISSETTA", "CATANIA", "ENNA", "MESSINA", "PALERMO", "RAGUSA", "SIRACUSA", "TRAPANI"},
+		"TOSCANA" -> {"AREZZO", "FIRENZE", "GROSSETO", "LIVORNO", "LUCCA", "MASSA-CARRARA", "PISA", "PISTOIA", "PRATO", "SIENA"},
+		"TRENTINO-ALTO ADIGE" -> {"BOLZANO", "TRENTO"},
+		"UMBRIA" -> {"PERUGIA", "TERNI"},
+		"VALLE D'AOSTA" -> {"AOSTA"},
+		"VENETO" -> {"BELLUNO", "PADOVA", "ROVIGO", "TREVISO", "VENEZIA", "VERONA", "VICENZA"}
+	];
+	
+	(* Italian electoral districts *)
+	DISTRICTS = Flatten[Values[DISTRICTSBYREGION]];
 	
 	(* Regions and their districts (circoscrizioni) *)
 	DISTRICTSBYREGION = Association[
@@ -57,7 +88,7 @@ Begin["`Private`"]
 		"SARDEGNA" -> {"SARDEGNA"},
 		"SICILIA" -> {"SICILIA 1", "SICILIA 2"},
 		"TOSCANA" -> {"TOSCANA"},
-		"TRENITNO-ALTO ADIGE" -> {"TRENTINO-ALTO ADIGE/S\[CapitalUDoubleDot]DTIROL"},
+		"TRENTINO-ALTO ADIGE" -> {"TRENTINO-ALTO ADIGE/S\[CapitalUDoubleDot]DTIROL"},
 		"UMBRIA" -> {"UMBRIA"},
 		"VALLE D'AOSTA" -> {},
 		"VENETO" -> {"VENETO 1", "VENETO 2"}
@@ -252,6 +283,52 @@ Begin["`Private`"]
 
 
 	(* PUBLIC FUNCTIONS (PLOTTING FUNCTIONS) AND PRIVATE DATA EXTRACTION FUNCTIONS (SUPPORT FOR PUBLIC FUNCTIONS) *)
+
+
+	ShowInterface1[] :=
+		DynamicModule[{form, house, region, province, district, query},
+			form = Panel[Column[{
+				(* Interface components *)
+				RadioButtonBar[
+					Dynamic[house],
+					{ChamberOfDeputies, SenateOfTheRepublic}
+				],
+				Row[{
+					Style["Region  \t"],
+					PopupMenu[
+						Dynamic[region],
+						Join[{"ALL"}, REGIONS],
+						FieldSize -> Medium
+					](* Free variable *)
+				}],
+				Row[{
+					Style["Province\t"],
+					Dynamic[PopupMenu[
+						Dynamic[province],
+						If[region === "ALL", Join[{"ALL"}, PROVINCES], Join[{"ALL"}, PROVINCESBYREGION[[region]]]],
+						FieldSize -> Medium
+					]] (* Depends on region *)
+				}],
+				Row[{
+					Style["District  \t"],
+					Dynamic[PopupMenu[
+						Dynamic[district],
+						If[region === "ALL", Join[{"ALL"}, DISTRICTS], Join[{"ALL"}, DISTRICTSBYREGION[[region]]]],
+						FieldSize -> Medium
+					]] (* Depends on region *)
+				}],
+				Row[{
+					Style["Query\t"],
+					InputField[
+						Dynamic[query],
+						String,
+						FieldSize -> Medium
+					]
+				}]
+			}, Center]];
+			
+			form
+		]
 
 
 	GetRegions[] := REGIONS
