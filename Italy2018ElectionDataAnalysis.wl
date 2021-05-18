@@ -235,7 +235,17 @@ Begin["`Private`"]
 	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ", _}], Take[Characters[d], Length[Characters[d]]-2], d]]
 	
 	(* Filters the given dataset by the given region *)
-	FilterRegion[dataset_, region_] := If[region === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[DISTRICT]]] == ToUpperCase[region] &]]]
+	FilterRegion[dataset_, region_] := 
+	If[region === Null, dataset, 
+		dataset[
+			Select[
+				MatchQ[
+					#[DATASETKEYS[[selectedYear]][[DISTRICT]]], 
+					((ToUpperCase[region] ~~ " " ~~ ("1" | "2" | "3" | "4")) | ToUpperCase[region])
+				]&
+			]
+		]
+	]
 	
 	(* Filters the given dataset by the given province *)
 	FilterProvince[dataset_, province_] := If[province === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[PROVINCE]]] == ToUpperCase[province] &]]]
@@ -323,7 +333,7 @@ Begin["`Private`"]
 				Row[{
 					Style["Query\t"],
 					InputField[
-						Dynamic[query],
+						Dynamic[query, Initialization -> (query = "")],
 						String,
 						FieldSize -> Medium
 					]
@@ -336,14 +346,14 @@ Begin["`Private`"]
 			districtOpt = If[district === "ALL", Null, district];
 			queryOpt = If[query === "", Null, query];
 			*)
-			Print[ValueQ[query]];
+			Print[query, "\n", Dynamic[query], "\n", ValueQ[query]];
 			charts = Panel[Row[{
 				Style["Electors"],
-				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" ->  query]],
+				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]],
 				Style["Voters"],
-				Dynamic[PlottingElectionVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> query]],
+				Dynamic[PlottingElectionVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]],
 				Style["Voters and non-voters"],
-				Dynamic[PlottingElectionVotersNonVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> query]]
+				Dynamic[PlottingElectionVotersNonVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]]
 			}]];
 			
 			Column[{form, charts}]
