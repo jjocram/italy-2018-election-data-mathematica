@@ -471,8 +471,9 @@ ShowInterface3[] :=
 	
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars[house_, opts : OptionsPattern[]] :=
-		Module[{divisions, divisionsVotes, divisionsColorVotes},
-			divisions = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"]; (*TODO: associare divisioni ottenute da Mathematica a regioni in regions*)
+		Module[{divisions, divisionUnordered, divisionsVotes, divisionsColorVotes},
+			divisionUnordered = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"];
+			divisions = Join[Take[divisionUnordered, 1], Take[divisionUnordered, {3, 13}], Take[divisionUnordered, {2, 2}], Take[divisionUnordered, {14, 20}]];
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
 			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
 			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel -> rvc[[2, 1]], ColorFunction -> rvc[[2,2]], GeoBackground -> None], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
@@ -545,8 +546,6 @@ ShowInterface3[] :=
 			districtKey = DATASETKEYS[[selectedYear]][[DISTRICT]];
 			coalitionKey = DATASETKEYS[[selectedYear]][[COALITION]];
 			votesKey = DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]];
-			
-			Print[];
 			
 			(* Applying filters *)
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
