@@ -239,7 +239,7 @@ Begin["`Private`"]
 	If[region === Null, dataset, 
 		dataset[
 			Select[
-				MatchQ[
+				StringMatchQ[
 					#[DATASETKEYS[[selectedYear]][[DISTRICT]]], 
 					((ToUpperCase[region] ~~ " " ~~ ("1" | "2" | "3" | "4")) | ToUpperCase[region])
 				]&
