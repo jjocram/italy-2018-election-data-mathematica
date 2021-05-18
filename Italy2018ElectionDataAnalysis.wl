@@ -26,7 +26,7 @@ PlottingElectionRegionCoalitionsBars3D::usage = ""
 PlottingCandidate::usage = "PlottingCandidate[name, surname, city: Null] returns a list of data to plot the histogram for the candidate."
 GetChamber::usage = "DEV TOOL GetChamber[] return the Chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
-GetElectionRegionCoalitionsBars::usage = ""
+PlottingRegionsItalyMap::usage = "PlottingRegionsItalyMap[exportDPI_: 500] exports the image of the map of Italy (500 dpi by default)"
 
 
 ChamberOfDeputies = "Chamber of Deputies"
@@ -468,6 +468,20 @@ Begin["`Private`"]
 				SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]]
 				]
 		]
+		
+		
+	PlottingRegionsItalyMap[exportDPI_: 500] :=
+		Module[{regions, polygons, ItalyMap},
+			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
+			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
+			ItalyMap = GeoGraphics[{GeoStyling["Satellite"], EdgeForm[{Thickness[Medium], White}],  polygons}, GeoBackground->None];			
+			Return[
+				Print["Exporting the image..."];
+				Export["ItalyMap.png", ItalyMap, ImageResolution -> exportDPI]]
+				Print["...Exported the image!"];
+				SystemOpen[DirectoryName[AbsoluteFileName["ItalyMap.png"]]]
+		]
+	
 	
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionRegionCoalitionsBars[house_, coalition_, opts : OptionsPattern[]] :=
