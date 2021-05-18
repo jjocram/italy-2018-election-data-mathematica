@@ -425,7 +425,7 @@ Begin["`Private`"]
 			divisions = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"]; (*TODO: associare divisioni ottenute da Mathematica a regioni in regions*)
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
 			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
-			Return[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}]]
+			Return[GraphicsRow[ParallelTable[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
 		]
 		
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
