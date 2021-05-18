@@ -26,6 +26,7 @@ PlottingElectionRegionCoalitionsBars3D::usage = ""
 PlottingCandidate::usage = "PlottingCandidate[name, surname, city: Null] returns a list of data to plot the histogram for the candidate."
 GetChamber::usage = "DEV TOOL GetChamber[] return the Chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
+PlottingRegionsItalyMap::usage = "PlottingRegionsItalyMap[exportDPI_: 500] exports the image of the map of Italy (500 dpi by default)"
 
 
 ChamberOfDeputies = "Chamber of Deputies"
@@ -441,28 +442,64 @@ Begin["`Private`"]
 		Module[{divisions, divisionsVotes, divisionsColorVotes},
 			divisions = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"]; (*TODO: associare divisioni ottenute da Mathematica a regioni in regions*)
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
-			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", "ValentineTones"}, {"Centro","SiennaTones"}, {"Destra", "AvocadoColors"}}];
-			Return[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}]]
+			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
+			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
 		]
 		
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
-		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3D},
+		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
-			temp = GetElectionRegionCoalitionsBars[ChamberOfDeputies, "Centro"];
-			(* Sia GetElectionRegionCoalitionsBars che Entity considerano le regioni ordinate in maniera alfabetica: tuttavia, la 1\[Degree]
-			funzione usa i nomi italiani, la 2\[Degree] i nomi inglesi, per cui \[EGrave] necessaria un sorto solo per "Apulia" = "Puglia" *)
-			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];
 			centralCoordinates = Reverse /@ EntityValue[regions, EntityProperty["AdministrativeDivision", "Coordinates"]];
 			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
-			Return[
-				Table[
-				{coord3D = Partition[
+			
+			temp = GetElectionRegionCoalitionsBars[house, "Sinistra"];
+			(* Sia GetElectionRegionCoalitionsBars che Entity considerano le regioni ordinate in maniera alfabetica: tuttavia, la 1\[Degree]
+			funzione usa i nomi italiani, la 2\[Degree] i nomi inglesi, per cui \[EGrave] necessaria un sorto solo per "Apulia" = "Puglia" *)
+			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];			
+			coord3D = Partition[
 					Flatten[
-						Transpose@{centralCoordinates, GetElectionRegionCoalitionsBars[ChamberOfDeputies, coalitions]/1000000}], 3];
-				graphBar3D = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False]},
-				{coalitions, {"Sinistra",  "Centro", "Destra"}}]]
+						Transpose@{centralCoordinates, votes/1000000}], 3];
+			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			
+			
+			temp = GetElectionRegionCoalitionsBars[house, "Centro"];
+			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];						
+			coord3D = Partition[
+					Flatten[
+						Transpose@{centralCoordinates, votes/1000000}], 3];
+			graphBar3DCenter = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			
+			temp = GetElectionRegionCoalitionsBars[house, "Destra"];
+			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];
+			coord3D = Partition[
+					Flatten[
+						Transpose@{centralCoordinates, votes/1000000}], 3];
+			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			
+			Return[
+				Print["Exporting 3D models..."];
+				Export[StringJoin[ToString[house], "_sx.3ds"], graphBar3DLeft];
+				Export[StringJoin[ToString[house], "_c.3ds"], graphBar3DCenter];
+				Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
+				Print["...Exported all file!"];
+				SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]]
+				]
 		]
+		
+		
+	PlottingRegionsItalyMap[exportDPI_: 500] :=
+		Module[{regions, polygons, ItalyMap},
+			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
+			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
+			ItalyMap = GeoGraphics[{GeoStyling["Satellite"], EdgeForm[{Thickness[Medium], White}],  polygons}, GeoBackground->None];			
+			Return[
+				Print["Exporting the image..."];
+				Export["ItalyMap.png", ItalyMap, ImageResolution -> exportDPI]]
+				Print["...Exported the image!"];
+				SystemOpen[DirectoryName[AbsoluteFileName["ItalyMap.png"]]]
+		]
+	
 	
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionRegionCoalitionsBars[house_, coalition_, opts : OptionsPattern[]] :=
