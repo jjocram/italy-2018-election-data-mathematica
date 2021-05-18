@@ -167,8 +167,8 @@ Begin["`Private`"]
 	ENLBLFEMALEELECTORS = "Female electors";
 	ENLBLMALEVOTERS = "Male voters";
 	ENLBLFEMALEVOTERS = "Female voters";
-	ENLBLMALENONVOTERS = "Male non-voters";
-	ENLBLFEMALENONVOTERS = "Female non-voters";
+	ENLBLMALENONVOTERS = "Male\nnon-voters";
+	ENLBLFEMALENONVOTERS = "Female\nnon-voters";
 	(* Italian labels *)
 	ITLBLMALEELECTORS = "Elettori maschi";
 	ITLBLFEMALEELECTORS = "Elettori femmine";
@@ -374,7 +374,10 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionElectorsPie[house, opts], ChartLegends->{ENLBLMALEELECTORS, ENLBLFEMALEELECTORS}, ChartStyle->{Blue, Red}]
+	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionElectorsPie[house, opts],
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionElectorsPie[house_, opts : OptionsPattern[]] := 
@@ -397,7 +400,10 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionVotersPie[house, opts], ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}, ChartStyle->{Blue, Red}]
+	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionVotersPie[house, opts],
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersPie[house_, opts : OptionsPattern[]] :=
@@ -420,7 +426,11 @@ Begin["`Private`"]
 
 
 	Options[PlottingElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
-	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] := PieChart[GetElectionVotersNonVotersPie[house, opts], ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
+	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
+		PieChart[GetElectionVotersNonVotersPie[house, opts],		
+			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}}, {"RadialCallout"}],
+			(* ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, *)
+			ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
 			
 	Options[GetElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
@@ -453,7 +463,7 @@ Begin["`Private`"]
 			divisions = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"]; (*TODO: associare divisioni ottenute da Mathematica a regioni in regions*)
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
 			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
-			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
+			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel -> rvc[[2, 1]], ColorFunction -> rvc[[2,2]], GeoBackground -> None], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
 		]
 		
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
