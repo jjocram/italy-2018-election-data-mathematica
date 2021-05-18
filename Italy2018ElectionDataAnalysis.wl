@@ -286,8 +286,10 @@ Begin["`Private`"]
 
 
 	ShowInterface1[] :=
-		DynamicModule[{form, house, region, province, district, query},
+		DynamicModule[{form, charts, house, region, province, district, query, regionOpt, provinceOpt, districtOpt, queryOpt},
 			form = Panel[Column[{
+				(* Title *)
+				Style["Data visualization on electors and voters", FontSize -> 28],
 				(* Interface components *)
 				RadioButtonBar[
 					Dynamic[house],
@@ -327,7 +329,23 @@ Begin["`Private`"]
 				}]
 			}, Center]];
 			
-			form
+			(* They are not automatically updated
+			regionOpt = If[region === "ALL", Null, region];
+			provinceOpt = If[province === "ALL", Null, province];
+			districtOpt = If[district === "ALL", Null, district];
+			queryOpt = If[query === "", Null, query];
+			*)
+			Print[ValueQ[query]];
+			charts = Panel[Row[{
+				Style["Electors"],
+				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" ->  query]],
+				Style["Voters"],
+				Dynamic[PlottingElectionVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> query]],
+				Style["Voters and non-voters"],
+				Dynamic[PlottingElectionVotersNonVotersPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> query]]
+			}]];
+			
+			Column[{form, charts}]
 		]
 
 
