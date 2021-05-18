@@ -26,6 +26,7 @@ PlottingElectionRegionCoalitionsBars3D::usage = ""
 PlottingCandidate::usage = "PlottingCandidate[name, surname, city: Null] returns a list of data to plot the histogram for the candidate."
 GetChamber::usage = "DEV TOOL GetChamber[] return the Chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
+GetElectionRegionCoalitionsBars::usage = ""
 
 
 ChamberOfDeputies = "Chamber of Deputies"
@@ -423,7 +424,7 @@ Begin["`Private`"]
 		Module[{divisions, divisionsVotes, divisionsColorVotes},
 			divisions = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"]; (*TODO: associare divisioni ottenute da Mathematica a regioni in regions*)
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
-			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", "ValentineTones"}, {"Centro","SiennaTones"}, {"Destra", "AvocadoColors"}}];
+			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
 			Return[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel->rvc[[2, 1]], ColorFunction->rvc[[2, 2]]], {rvc, divisionsColorVotes}]]
 		]
 		
