@@ -18,6 +18,8 @@ BeginPackage["Italy2018ElectionDataAnalysis`"]
 
 LoadDataByYear::usage = "LoadDataByYear[year] loads the dataset for the year given as input to the function."
 ShowInterface1::usage = ""
+ShowInterface2::usgae = ""
+ShowInterface3::usgae = ""
 PlottingElectionElectorsPie::usage = "PlottingElectionElectorsPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the electors pie chart."
 PlottingElectionVotersPie::usage = "PlottingElectionVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters pie chart."
 PlottingElectionVotersNonVotersPie::usage = "PlottingElectionVotersNonVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters and non voters pie chart."
@@ -346,7 +348,6 @@ Begin["`Private`"]
 			districtOpt = If[district === "ALL", Null, district];
 			queryOpt = If[query === "", Null, query];
 			*)
-			Print[query, "\n", Dynamic[query], "\n", ValueQ[query]];
 			charts = Panel[Row[{
 				Style["Electors"],
 				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]],
@@ -358,6 +359,23 @@ Begin["`Private`"]
 			
 			Column[{form, charts}]
 		]
+
+
+(*DoES noT woRK BECaUsE REasoN*)
+ShowInterface2[] :=
+		Manipulate[
+			PlottingElectionRegionCoalitionsBars[house],
+			{house, {ChamberOfDeputies, SenateOfTheRepublic}}
+		]
+
+
+ShowInterface3[] :=
+	Manipulate[
+		PlottingCandidate[name, surname, city -> cityOpt], 
+		{{name, "", "First name"}, "" InputField[#, String]&},
+		{{surname, "", "Last name"}, "", InputField[#, String]&},
+		{{cityOpt, "", "City"}, "", InputField[#, String]&}
+	]
 
 
 	GetRegions[] := REGIONS
