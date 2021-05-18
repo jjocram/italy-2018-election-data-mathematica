@@ -297,7 +297,7 @@ Begin["`Private`"]
 
 
 	ShowInterface1[] :=
-		DynamicModule[{form, charts, house, region, province, district, query, regionOpt, provinceOpt, districtOpt, queryOpt},
+		DynamicModule[{form, charts, house, region, province, district, query},
 			form = Panel[Column[{
 				(* Title *)
 				Style["Data visualization on electors and voters", FontSize -> 28],
@@ -340,13 +340,6 @@ Begin["`Private`"]
 				}]
 			}, Center]];
 			
-			(* They are not automatically updated
-			regionOpt = If[region === "ALL", Null, region];
-			provinceOpt = If[province === "ALL", Null, province];
-			districtOpt = If[district === "ALL", Null, district];
-			queryOpt = If[query === "", Null, query];
-			*)
-			Print[query, "\n", Dynamic[query], "\n", ValueQ[query]];
 			charts = Panel[Row[{
 				Style["Electors"],
 				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]],
@@ -523,20 +516,37 @@ Begin["`Private`"]
 	
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionRegionCoalitionsBars[house_, coalition_, opts : OptionsPattern[]] :=
-		Module[{dataset, parties, datasetSelectBy},
+		Module[{dataset, parties, datasetSelectBy, result, districtKey, coalitionKey, votesKey, regionVotes},
 		    (* Dataset selection *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
 			parties = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], COALITIONSCHAMBER[[selectedYear]][[coalition]], COALITIONSSENATE[[selectedYear]][[coalition]]];
-			datasetSelectBy = dataset;			
+			datasetSelectBy = dataset;		
+			
+			(* Helper keys *)	
+			districtKey = DATASETKEYS[[selectedYear]][[DISTRICT]];
+			coalitionKey = DATASETKEYS[[selectedYear]][[COALITION]];
+			votesKey = DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]];
+			
+			Print[];
 			
 			(* Applying filters *)
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
+			datasetSelectBy = datasetSelectBy[Select[MemberQ[parties, #[coalitionKey]]&]];
 			
 			(* Returning the result *)
-			Return[Table[Total[datasetSelectBy[Select[GetRegionFromDistrict[#[DATASETKEYS[[selectedYear]][[DISTRICT]]]] == r&]][Select[MemberQ[parties, #[DATASETKEYS[[selectedYear]][[COALITION]]]] &]][All, DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]]]], {r, REGIONS}]]
+			Return[
+				Table[
+					Total[
+						datasetSelectBy[
+							Select[GetRegionFromDistrict[#[districtKey]] == r&]
+						][All, votesKey]
+					],
+					{r, REGIONS}
+				]
+			]
 		]
 
 
