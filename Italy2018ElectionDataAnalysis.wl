@@ -18,8 +18,10 @@ BeginPackage["Italy2018ElectionDataAnalysis`"]
 
 LoadDataByYear::usage = "LoadDataByYear[year] loads the dataset for the year given as input to the function."
 ShowInterface1::usage = ""
-ShowInterface2::usgae = ""
-ShowInterface3::usgae = ""
+ShowInterface2::usage = ""
+ShowInterface2Interactive::usage = ""
+ShowInterface3::usage = ""
+
 PlottingElectionElectorsPie::usage = "PlottingElectionElectorsPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the electors pie chart."
 PlottingElectionVotersPie::usage = "PlottingElectionVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters pie chart."
 PlottingElectionVotersNonVotersPie::usage = "PlottingElectionVotersNonVotersPie[house, region: Null, province: Null, district: Null, query: Null] returns a list of data to plot the voters and non voters pie chart."
@@ -355,12 +357,25 @@ Begin["`Private`"]
 		]
 
 
-(*DoES noT woRK BECaUsE REasoN*)
 ShowInterface2[] :=
-		Manipulate[
-			PlottingElectionRegionCoalitionsBars[house],
-			{house, {ChamberOfDeputies, SenateOfTheRepublic}}
-		]
+	Module[{chart},
+		chart = Panel[Row[{
+			Style[ChamberOfDeputies, FontSize -> 28],
+			PlottingElectionRegionCoalitionsBars[ChamberOfDeputies]}],
+			Row[{
+			Style[SenateOfTheRepublic, FontSize -> 28],
+			PlottingElectionRegionCoalitionsBars[SenateOfTheRepublic]
+		}]]; 
+		
+		Column[{chart}]
+	]
+
+
+ShowInterface2Interactive[] :=
+	Manipulate[
+		PlottingElectionRegionCoalitionsBars[house],
+		{house, {ChamberOfDeputies, SenateOfTheRepublic}}
+	]
 
 
 ShowInterface3[] :=
@@ -388,7 +403,7 @@ ShowInterface3[] :=
 	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] :=
 		PieChart[GetElectionElectorsPie[house, opts],
-			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
 			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
@@ -414,7 +429,7 @@ ShowInterface3[] :=
 	Options[PlottingElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] :=
 		PieChart[GetElectionVotersPie[house, opts],
-			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS}}, {"RadialCallout"}],
+			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
 			ChartStyle->{Blue, Red}]
 	
 	Options[GetElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
@@ -440,7 +455,7 @@ ShowInterface3[] :=
 	Options[PlottingElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
 		PieChart[GetElectionVotersNonVotersPie[house, opts],		
-			ChartLabels-> Placed[{Style[#, 14] &/@ {ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}}, {"RadialCallout"}],
+			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
 			(* ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, *)
 			ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
 			
@@ -548,11 +563,14 @@ ShowInterface3[] :=
 			votesKey = DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]];
 			
 			(* Applying filters *)
+			
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			datasetSelectBy = datasetSelectBy[Select[MemberQ[parties, #[coalitionKey]]&]];
+			
+			datasetSelectBy = datasetSelectBy[All, {districtKey, votesKey}];
 			
 			(* Returning the result *)
 			Return[
