@@ -91,11 +91,11 @@ Begin["`Private`"]
 	(* Collection of dataset references (for future updates). *)
 	DATASETS = Association[
 		"2018" -> Association[
-			ChamberOfDeputies -> Association[
+			"Chamber of Deputies" -> Association[
 				"url" -> "https://dait.interno.gov.it/documenti/camera_2018_scrutini_italia.csv",
 				"cache" -> "camera_2018_scrutini_italia.csv"
 			],
-			SenateOfTheRepublic -> Association[
+			"Senate of the Republic" -> Association[
 				"url" -> "https://dait.interno.gov.it/documenti/senato_2018_scrutini_italia.csv",
 				"cache" -> "senato_2018_scrutini_italia.csv"
 			]
@@ -122,24 +122,17 @@ Begin["`Private`"]
 	DATASETKEYS = Association[
 		"2018" -> Association[
 			DISTRICT -> "CIRCOSCRIZIONE",
-			PLURINOMINALE -> "PLURINOMINALE",
-			UNINOMINALE -> "UNINOMINALE",
 			PROVINCE -> "PROVINCIA",
-			CITY -> "COMUNE",
-			FIRSTNAME -> "NOME",
 			LASTNAME -> "COGNOME",
-			PARTY -> "LISTA",
-			ELECTORS -> "ELETTORI",
+			FIRSTNAME -> "NOME",
+			CITY -> "COMUNE",
 			MALEELECTORS -> "ELETTORIMAS",
 			FEMALEELECTORS -> "ELETTORIFEM",
-			VOTERS -> "VOTANTI",
 			MALEVOTERS -> "VOTANTIMAS",
 			FEMALEVOTERS -> "VOTANTIFEM",
-			VOTESTOLIST -> "VOTILISTA",
-			BLANKVOTES = "BIANCHE",
-			CONTESTEDVOTES = "CONTESTATE",
-			INVALIDVOTES = "NONVALIDE",
 			VOTICANDUNINOM -> "VOTICANDUNINOM",
+			COALITION -> "LISTA",
+			UNINOMINALE -> "UNINOMINALE",
 			VOTISOLOCANDUNINOM -> "VOTISOLOCANDUNINOM"
 		]
 	];
@@ -152,21 +145,14 @@ Begin["`Private`"]
 	FIRSTNAME = "firstname";
 	CITY = "city";
 	HOUSE = "house";
-	ELECTORS = "electors";
 	MALEELECTORS = "maleElectors";
 	FEMALEELECTORS = "femaleElectors";
-	VOTERS = "voters";
 	MALEVOTERS = "maleVoters";
 	FEMALEVOTERS = "femaleVoters";
 	VOTICANDUNINOM = "singleMemberDistrictCandidateVotes";
-	PARTY = "list";
+	COALITION = "list";
 	UNINOMINALE = "singleMemberDistrict";
-	PLURINOMINALE = "multipleMemberDistrict";
 	VOTISOLOCANDUNINOM = "singleMemberDistrictCandidateOnlyVotes";
-	VOTESTOLIST = "votesToList";
-	BLANKVOTES = "blank";
-	CONTESTEDVOTES = "contested";
-	INVALIDVOTES = "invalid";
 	
 	(* CHART LABELS *)
 	(* English labels *)
@@ -176,6 +162,13 @@ Begin["`Private`"]
 	ENLBLFEMALEVOTERS = "Female voters";
 	ENLBLMALENONVOTERS = "Male\nnon-voters";
 	ENLBLFEMALENONVOTERS = "Female\nnon-voters";
+	(* Italian labels *)
+	ITLBLMALEELECTORS = "Elettori maschi";
+	ITLBLFEMALEELECTORS = "Elettori femmine";
+	ITLBLMALEVOTERS = "Votanti maschi";
+	ITLBLFEMALEVOTERS = "Votanti femmine";
+	ITLBLMALENONVOTERS = "Non votanti maschi";
+	ITLBLFEMALENONVOTERS = "Non votanti femmine";
 
 
 	(* DATA FIELDS *)
@@ -527,7 +520,7 @@ Begin["`Private`"]
 	
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionRegionCoalitionsBars[house_, coalition_, opts : OptionsPattern[]] :=
-		Module[{dataset, parties, datasetSelectBy, result, districtKey, partyKey, votesKey, regionVotes},
+		Module[{dataset, parties, datasetSelectBy, result, districtKey, coalitionKey, votesKey, regionVotes},
 		    (* Dataset selection *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
 			parties = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], COALITIONSCHAMBER[[selectedYear]][[coalition]], COALITIONSSENATE[[selectedYear]][[coalition]]];
@@ -535,7 +528,7 @@ Begin["`Private`"]
 			
 			(* Helper keys *)	
 			districtKey = DATASETKEYS[[selectedYear]][[DISTRICT]];
-			partyKey = DATASETKEYS[[selectedYear]][[PARTY]];
+			coalitionKey = DATASETKEYS[[selectedYear]][[COALITION]];
 			votesKey = DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]];
 			
 			(* Applying filters *)
@@ -544,7 +537,7 @@ Begin["`Private`"]
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
-			datasetSelectBy = datasetSelectBy[Select[MemberQ[parties, #[partyKey]]&]];
+			datasetSelectBy = datasetSelectBy[Select[MemberQ[parties, #[coalitionKey]]&]];
 			
 			datasetSelectBy = datasetSelectBy[All, {districtKey, votesKey}];
 			
