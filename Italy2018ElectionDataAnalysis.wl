@@ -31,6 +31,7 @@ PlottingCandidate::usage = "PlottingCandidate[name, surname, city: Null] returns
 GetChamber::usage = "DEV TOOL GetChamber[] return the Chamber dataset"
 GetRegions::usage = "GetRegions[] return the list of regions used in this package"
 PlottingRegionsItalyMap::usage = "PlottingRegionsItalyMap[exportDPI_: 500] exports the image of the map of Italy (500 dpi by default)"
+GetCandidate::usage = ""
 
 
 ChamberOfDeputies = "Chamber of Deputies"
@@ -588,9 +589,10 @@ ShowInterface3[] :=
 
 	Options[PlottingCandidate] = {city -> Null};
 	PlottingCandidate[name_, surname_, opts : OptionsPattern[]] := 
-		Module[{result},
-			result = GetCandidate[name, surname, opts];
-			Return[BarChart[result[[4]], ChartLegends -> result[[2]][All], ImageSize -> Large, ChartStyle -> "DarkRainbow"]];
+		Module[{result, cityOpt},
+			cityOpt = If[OptionValue["city"] == "", Null, OptionValue["city"]];
+			result = GetCandidate[name, surname, "city" -> cityOpt];
+			Return[BarChart[result[[4]], ImageSize -> Large, ChartStyle -> "DarkRainbow", ChartLabels -> Normal[result[[2]]]]];
 		]
 	
 	Options[GetCandidate] = {city -> Null};
@@ -602,6 +604,7 @@ ShowInterface3[] :=
 	         chamberDatasetSelectBy = FilterLastName[chamberDatasetSelectBy, surname];
 	         chamberDatasetSelectBy = FilterFirstName[chamberDatasetSelectBy, name];
 	         chamberDatasetSelectBy = FilterCity[chamberDatasetSelectBy, OptionValue[city]];
+	         Print[chamberDatasetSelectBy];
 	         
 	         (* Applying filters into the dataset of the Senate of the Republic *)
 	         If[Length[chamberDatasetSelectBy] == 0, (
