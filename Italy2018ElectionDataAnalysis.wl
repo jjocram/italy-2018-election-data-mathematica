@@ -463,7 +463,6 @@ Begin["`Private`"]
 			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel -> rvc[[2, 1]], ColorFunction -> rvc[[2,2]], GeoBackground -> None], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
 		]
 		
-	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
 		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
