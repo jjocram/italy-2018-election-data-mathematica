@@ -20,6 +20,8 @@ LoadDataByYear::usage = "LoadDataByYear[year] loads the dataset for the year giv
 AnalyzeElectorsVotersNonvoters::usage = "AnalyzeElectorsVotersNonvoters[] generates the user interface with input fields for showing pie charts regarding electors, voters and non voters divided by sex."
 AnalyzeVotesForCoalitionsInRegions::usage = "AnalyzeVotesForCoalitionsInRegions[] generates the user interface with house selector for showing heatmaps with how many votes each coalition got in each Italian region."
 AnalyzeVotesForCandidate::usage = "AnalyzeVotesForCandidate[] generates the user interface with input fields for showing how many votes the searched candidate got in a city of his/her district."
+PlottingRegionsItalyMap::usage = "PlottingRegionsItalyMap[exportDPI] generate a .png file of Italy divided by region"
+PlottingElectionRegionCoalitionsBars3D::usage = "PlottingElectionRegionCoalitionsBars3D[house] generates the .3ds files for each 3D bar chart for each coalitions."
 
 
 Begin["`Private`"]
@@ -487,7 +489,7 @@ Begin["`Private`"]
 			Return[GraphicsRow[Table[GeoRegionValuePlot[rvc[[1]], PlotLabel -> rvc[[2, 1]], ColorFunction -> rvc[[2,2]], GeoBackground -> None], {rvc, divisionsColorVotes}], Frame -> All, ImageSize -> Full]]
 		]
 		
-	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
+	PlottingElectionRegionCoalitionsBars3D[house_] :=
 		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
 			(* Retrieving Italian regions (those managed by Mathematica, since they need to be plotted). *)
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
@@ -511,14 +513,13 @@ Begin["`Private`"]
 			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
 			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
-			Return[
-				Print["Exporting 3D models..."];
-				Export[StringJoin[ToString[house], "_sx.3ds"], graphBar3DLeft];
-				Export[StringJoin[ToString[house], "_c.3ds"], graphBar3DCenter];
-				Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
-				Print["...exported all files!"];
-				SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]]
-				]
+			
+			Print["Exporting 3D models..."];
+			Export[StringJoin[ToString[house], "_sx.3ds"], graphBar3DLeft];
+			Export[StringJoin[ToString[house], "_c.3ds"], graphBar3DCenter];
+			Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
+			Print["...exported all files!"];
+			SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]];
 		]
 		
 		
@@ -527,11 +528,11 @@ Begin["`Private`"]
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
 			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
 			ItalyMap = GeoGraphics[{GeoStyling["Satellite"], EdgeForm[{Thickness[Medium], White}],  polygons}, GeoBackground->None];			
-			Return[
-				Print["Exporting the image..."];
-				Export["ItalyMap.png", ItalyMap, ImageResolution -> exportDPI]]
-				Print["...Exported the image!"];
-				SystemOpen[DirectoryName[AbsoluteFileName["ItalyMap.png"]]]
+			
+			Print["Exporting the image..."];
+			Export["ItalyMap.png", ItalyMap, ImageResolution -> exportDPI];
+			Print["...Exported the image!"];
+			SystemOpen[DirectoryName[AbsoluteFileName["ItalyMap.png"]]];
 		]
 	
 	
