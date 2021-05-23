@@ -300,14 +300,17 @@ Begin["`Private`"]
 
 	ShowInterface1[] :=
 		DynamicModule[{form, charts, house, region, province, district, query},
+			(* DATA INPUT *)
 			form = Panel[Column[{
-				(* Title *)
+				(* Title of the form. *)
 				Style["Data visualization on electors and voters", FontSize -> 28],
-				(* Interface components *)
+				(* Form components *)
+				(* Selector of the house. *)
 				RadioButtonBar[
 					Dynamic[house],
 					{ChamberOfDeputies, SenateOfTheRepublic}
 				],
+				(* Selector for the region. *)
 				Row[{
 					Style["Region  \t"],
 					PopupMenu[
@@ -316,22 +319,27 @@ Begin["`Private`"]
 						FieldSize -> Medium
 					](* Free variable *)
 				}],
+				(* Selector for the province. *)
 				Row[{
 					Style["Province\t"],
 					Dynamic[PopupMenu[
 						Dynamic[province],
+						(* Returning all provinces if no region is selected, othwerwise only provinces of the selected region are returned. *)
 						If[region === "ALL", Join[{"ALL"}, PROVINCES], Join[{"ALL"}, PROVINCESBYREGION[[region]]]],
 						FieldSize -> Medium
 					]] (* Depends on region *)
 				}],
+				(* Selector for the district. *)
 				Row[{
 					Style["District  \t"],
 					Dynamic[PopupMenu[
 						Dynamic[district],
+						(* Returning all districts if no region is selected, othwerwise only districts of the selected region are returned. *)
 						If[region === "ALL", Join[{"ALL"}, DISTRICTS], Join[{"ALL"}, DISTRICTSBYREGION[[region]]]],
 						FieldSize -> Medium
 					]] (* Depends on region *)
 				}],
+				(* Input field for the query. *)
 				Row[{
 					Style["Query\t"],
 					InputField[
@@ -342,6 +350,7 @@ Begin["`Private`"]
 				}]
 			}, Center]];
 			
+			(* DATA OUTPUT *)
 			charts = Panel[Row[{
 				Style["Electors"],
 				Dynamic[PlottingElectionElectorsPie[house, "region" -> If[region === "ALL", Null, region], "province" -> If[province === "ALL", Null, province], "district" -> If[district === "ALL", Null, district], "query" -> If[StringMatchQ[query, ""], Null, query]]],
@@ -380,24 +389,26 @@ Begin["`Private`"]
 
 	Options[PlottingElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionElectorsPie[house_, opts : OptionsPattern[]] :=
-		PieChart[GetElectionElectorsPie[house, opts],
+		PieChart[
+			GetElectionElectorsPie[house, opts],
 			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
-			ChartStyle->{Blue, Red}]
+			ChartStyle->{Blue, Red}
+		]
 	
 	Options[GetElectionElectorsPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionElectorsPie[house_, opts : OptionsPattern[]] := 
 		Module[{dataset, datasetSelectBy, maleElectors, femaleElectors},		    
-		    (* Dataset selection *)
+		    (* Dataset selection. *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
-			datasetSelectBy = dataset[DeleteDuplicatesBy[DATASETKEYS[[selectedYear]][[CITY]]]]; (* General data on the elections are copied in each row for every candidate and party in a city, therefore we can remove the duplicates *)
+			datasetSelectBy = dataset[DeleteDuplicatesBy[DATASETKEYS[[selectedYear]][[CITY]]]]; (* General data on the elections are copied in each row for every candidate and party in a city, therefore we can remove the duplicates. *)
 			
-			(* Applying filters *)
+			(* Applying filters. *)
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
-			(* Returning the result *)
+			(* Returning the result. *)
 			maleElectors = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[MALEELECTORS]]]];
 			femaleElectors = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[FEMALEELECTORS]]]];
 			Return[{maleElectors, femaleElectors}]
@@ -408,22 +419,23 @@ Begin["`Private`"]
 	PlottingElectionVotersPie[house_, opts : OptionsPattern[]] :=
 		PieChart[GetElectionVotersPie[house, opts],
 			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
-			ChartStyle->{Blue, Red}]
+			ChartStyle->{Blue, Red}
+		]
 	
 	Options[GetElectionVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersPie[house_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters},
-		    (* Dataset selection *)
+		    (* Dataset selection. *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy[DATASETKEYS[[selectedYear]][[CITY]]]];
 			
-			(* Applying filters *)
+			(* Applying filters. *)
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
-			(* Returning the result *)
+			(* Returning the result. *)
 			maleVoters = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[MALEVOTERS]]]];
 			femaleVoters = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[FEMALEVOTERS]]]];
 			Return[{maleVoters, femaleVoters}]
@@ -432,25 +444,26 @@ Begin["`Private`"]
 
 	Options[PlottingElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
-		PieChart[GetElectionVotersNonVotersPie[house, opts],		
+		PieChart[
+			GetElectionVotersNonVotersPie[house, opts],		
 			ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS},
-			(* ChartLegends->{ENLBLMALEVOTERS, ENLBLFEMALEVOTERS, ENLBLMALENONVOTERS, ENLBLFEMALENONVOTERS}, *)
-			ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}]
+			ChartStyle->{Blue, Red, Hue[0.65,0.5,1], Hue[0.03,0.46,1]}
+		]
 			
 	Options[GetElectionVotersNonVotersPie] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionVotersNonVotersPie[house_, opts : OptionsPattern[]] :=
 		Module[{dataset, datasetSelectBy, maleVoters, femaleVoters, maleElectors, femaleElectors}, 
-		    (* Dataset selection *)
+		    (* Dataset selection. *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
 			datasetSelectBy = dataset[DeleteDuplicatesBy[DATASETKEYS[[selectedYear]][[CITY]]]];
 			
-			(* Applying filters *)
+			(* Applying filters. *)
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
 			datasetSelectBy = FilterDistrict[datasetSelectBy, OptionValue[district]];
 			datasetSelectBy = FilterQuery[datasetSelectBy, OptionValue[query]];
 			
-			(* Returning the result *)
+			(* Returning the result. *)
 			maleElectors = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[MALEELECTORS]]]];
 			femaleElectors = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[FEMALEELECTORS]]]];
 			maleVoters = Total[datasetSelectBy[All, DATASETKEYS[[selectedYear]][[MALEVOTERS]]]];
@@ -465,7 +478,9 @@ Begin["`Private`"]
 	Options[PlottingElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	PlottingElectionRegionCoalitionsBars[house_, opts : OptionsPattern[]] :=
 		Module[{divisions, divisionUnordered, divisionsVotes, divisionsColorVotes},
+			(* Retrieving Italian regions (those managed by Mathematica, since they need to be plotted). *)
 			divisionUnordered = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"];
+			(* divisionUnordered is alphabetically ordered by region name, in English: only region Apulia (Puglia in Italian) is in the wrong place in the Italian alphabetical order. *)
 			divisions = Join[Take[divisionUnordered, 1], Take[divisionUnordered, {3, 13}], Take[divisionUnordered, {2, 2}], Take[divisionUnordered, {14, 20}]];
 			divisionsVotes = Table[Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, coalition, opts]}, {coalition, {"Sinistra", "Centro", "Destra"}}];
 			divisionsColorVotes = pairUp[divisionsVotes, {{"Sinistra", ColorData[{"ValentineTones", "Reverse"}]}, {"Centro", ColorData[{"SiennaTones", "Reverse"}]}, {"Destra", ColorData[{"AvocadoColors", "Reverse"}]}}];
@@ -474,32 +489,26 @@ Begin["`Private`"]
 		
 	PlottingElectionRegionCoalitionsBars3D[house_, opts : OptionsPattern[]] :=
 		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
+			(* Retrieving Italian regions (those managed by Mathematica, since they need to be plotted). *)
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
 			centralCoordinates = Reverse /@ EntityValue[regions, EntityProperty["AdministrativeDivision", "Coordinates"]];
 			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
 			
 			temp = GetElectionRegionCoalitionsBars[house, "Sinistra"];
-			(* Sia GetElectionRegionCoalitionsBars che Entity considerano le regioni ordinate in maniera alfabetica: tuttavia, la 1\[Degree]
-			funzione usa i nomi italiani, la 2\[Degree] i nomi inglesi, per cui \[EGrave] necessaria un sorto solo per "Apulia" = "Puglia" *)
+			(* Both GetElectionRegionCoalitionsBars and Entity consider regions in an alphabetically ordered fashion. By th way, the first
+			functions uses Italian names, the second one uses English names, therefore a swapping is needed for "Apulia" = "Puglia". *)
 			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];			
-			coord3D = Partition[
-					Flatten[
-						Transpose@{centralCoordinates, votes/1000000}], 3];
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
 			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
-			
 			
 			temp = GetElectionRegionCoalitionsBars[house, "Centro"];
 			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];						
-			coord3D = Partition[
-					Flatten[
-						Transpose@{centralCoordinates, votes/1000000}], 3];
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
 			graphBar3DCenter = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
 			temp = GetElectionRegionCoalitionsBars[house, "Destra"];
 			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];
-			coord3D = Partition[
-					Flatten[
-						Transpose@{centralCoordinates, votes/1000000}], 3];
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
 			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
 			Return[
@@ -529,17 +538,18 @@ Begin["`Private`"]
 	Options[GetElectionRegionCoalitionsBars] = {region -> Null, province -> Null, district -> Null, query -> Null};
 	GetElectionRegionCoalitionsBars[house_, coalition_, opts : OptionsPattern[]] :=
 		Module[{dataset, parties, datasetSelectBy, result, districtKey, coalitionKey, votesKey, regionVotes},
-		    (* Dataset selection *)
+		    (* Dataset and parties selection. *)
 			dataset = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], chamberDataset, senateDataset];
+			(* Selecting the parties related to the coalition given as argument (they depend on the chosen house). *)
 			parties = If[ToUpperCase[house] === ToUpperCase[ChamberOfDeputies], COALITIONSCHAMBER[[selectedYear]][[coalition]], COALITIONSSENATE[[selectedYear]][[coalition]]];
 			datasetSelectBy = dataset;		
 			
-			(* Helper keys *)	
+			(* Keys for accessing the dataset. *)	
 			districtKey = DATASETKEYS[[selectedYear]][[DISTRICT]];
 			coalitionKey = DATASETKEYS[[selectedYear]][[COALITION]];
 			votesKey = DATASETKEYS[[selectedYear]][[VOTICANDUNINOM]];
 			
-			(* Applying filters *)
+			(* Applying filters. *)
 			
 			datasetSelectBy = FilterRegion[datasetSelectBy, OptionValue[region]];
 			datasetSelectBy = FilterProvince[datasetSelectBy, OptionValue[province]];
@@ -549,7 +559,7 @@ Begin["`Private`"]
 			
 			datasetSelectBy = datasetSelectBy[All, {districtKey, votesKey}];
 			
-			(* Returning the result *)
+			(* Returning the result. *)
 			Return[
 				Table[
 					Total[
@@ -566,7 +576,10 @@ Begin["`Private`"]
 	PlottingCandidate[name_, surname_, city_] := 
 		Module[{result},
 			result = GetCandidate[name, surname, city];
-			If[name == "" || surname || "" || city == "", Return[Style["Fill in all fields of the form."]]];
+			If[
+				name == "" || surname || "" || city == "",
+				Return[Style["Fill in all fields of the form."]]
+			];
 			
 			If[
 				result[[1]] == "NOT FOUND",
@@ -589,37 +602,38 @@ Begin["`Private`"]
 	
 	GetCandidate[name_, surname_, city_] :=
 	     Module[{chamberDatasetSelectBy, senateDatasetSelectBy, returnDataset, returnedLists, uninominaleName},	         
-	         (* Applying filters into the dataset of the Chamber of Deputies *)
+	         (* Applying filters into the dataset of the Chamber of Deputies. *)
 	         chamberDatasetSelectBy = chamberDataset;
 	         
 	         chamberDatasetSelectBy = FilterLastName[chamberDatasetSelectBy, surname];
 	         chamberDatasetSelectBy = FilterFirstName[chamberDatasetSelectBy, name];
 	         chamberDatasetSelectBy = FilterCity[chamberDatasetSelectBy, city];
 	         
-	         (* Applying filters into the dataset of the Senate of the Republic *)
+	         (* Applying filters into the dataset of the Senate of the Republic. *)
+			 (* Little performance extra: the Senate dataset is filtered only if no data is found in the Chamber dataset. *)
 	         If[Length[chamberDatasetSelectBy] == 0, (
 	             senateDatasetSelectBy = senateDataset;
 	         
 	             senateDatasetSelectBy = FilterLastName[senateDatasetSelectBy, surname];
 	             senateDatasetSelectBy = FilterFirstName[senateDatasetSelectBy, name];
 	             senateDatasetSelectBy = FilterCity[senateDatasetSelectBy, city];
-	         )]; (* Little performance extra: the Senate dataset is filtered only if no data is found in the Chamber dataset *)
+	         )];
 	         
-	         returnedLists = {}; (* Output variable *)
-	         uninominaleName = ""; (* Part of the output variable *)
+	         returnedLists = {}; (* Output variable. *)
+	         uninominaleName = ""; (* Part of the output variable. *)
 	         
-	         (* Returning the result *)
+	         (* Returning the result. *)
 	         If[Length[chamberDatasetSelectBy] > 0, (
-	             uninominaleName = chamberDatasetSelectBy[1, DATASETKEYS[[selectedYear]][[UNINOMINALE]]]; (* It is sufficient to get the name of the uninominale from the first row, since a candidate can only be present in one uninominale *)
+	             uninominaleName = chamberDatasetSelectBy[1, DATASETKEYS[[selectedYear]][[UNINOMINALE]]]; (* It is sufficient to get the name of the uninominale from the first row, since a candidate can only be present in one uninominale. *)
 	             returnDataset = chamberDataset;
 	         )];
-	         If[Length[senateDatasetSelectBy] > 0, ((* Either a candidate is present in the Chamber or Senate or in none of the two *)
+	         If[Length[senateDatasetSelectBy] > 0, ((* Either a candidate is present in the Chamber or Senate or in none of the two. *)
 	             uninominaleName = senateDatasetSelectBy[1, DATASETKEYS[[selectedYear]][[UNINOMINALE]]];
 	             returnDataset = senateDataset;
 	         )];
 	         If[Length[chamberDatasetSelectBy] == 0 && Length[senateDatasetSelectBy] == 0, (
 	             uninominaleName = "NOT FOUND";
-	             returnDataset = senateDatasetSelectBy; (* Taking this dataset knowing it is empty but with the right columns to return *)
+	             returnDataset = senateDatasetSelectBy; (* Taking this dataset knowing it is empty but with the right columns to return. *)
 	         )];
 	         
 	         returnDataset = FilterCity[returnDataset, city];
