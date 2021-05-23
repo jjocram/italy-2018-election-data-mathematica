@@ -17,9 +17,9 @@ BeginPackage["Italy2018ElectionDataAnalysis`"]
 
 
 LoadDataByYear::usage = "LoadDataByYear[year] loads the dataset for the year given as input to the function."
-ShowInterface1::usage = ""
-ShowInterface2::usage = ""
-ShowInterface3::usage = ""
+AnalyzeElectorsVotersNonvoters::usage = "AnalyzeElectorsVotersNonvoters[] generates the user interface with input fields for showing pie charts regarding electors, voters and non voters divided by sex."
+AnalyzeVotesForCoalitionsInRegions::usage = "AnalyzeVotesForCoalitionsInRegions[] generates the user interface with house selector for showing heatmaps with how many votes each coalition got in each Italian region."
+AnalyzeVotesForCandidate::usage = "AnalyzeVotesForCandidate[] generates the user interface with input fields for showing how many votes the searched candidate got in a city of his/her district."
 
 
 Begin["`Private`"]
@@ -298,7 +298,7 @@ Begin["`Private`"]
 	(* PUBLIC FUNCTIONS (PLOTTING FUNCTIONS) AND PRIVATE DATA EXTRACTION FUNCTIONS (SUPPORT FOR PUBLIC FUNCTIONS) *)
 
 
-	ShowInterface1[] :=
+	AnalyzeElectorsVotersNonvoters[] :=
 		DynamicModule[{form, charts, house, region, province, district, query},
 			(* DATA INPUT *)
 			form = Panel[Column[{
@@ -364,14 +364,14 @@ Begin["`Private`"]
 		]
 
 
-	ShowInterface2[] :=
+	AnalyzeVotesForCoalitionsInRegions[] :=
 		Manipulate[
 			PlottingElectionRegionCoalitionsBars[house],
 			{{house, ChamberOfDeputies, "House"}, {ChamberOfDeputies, SenateOfTheRepublic}}
 		]
 
 
-	ShowInterface3[] :=
+	AnalyzeVotesForCandidate[] :=
 		Manipulate[
 			PlottingCandidate[name, surname, city], 
 			{{name, "", "First name"}, "" InputField[#, String]&},
