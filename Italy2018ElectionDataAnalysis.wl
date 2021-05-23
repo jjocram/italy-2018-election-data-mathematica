@@ -1,16 +1,16 @@
 (* ::Package:: *)
 
-(* :Title : Italy 2018 Election Data Analysis *)
-(* :Context : Italy 2018 Election Data Analysis *)
-(* :Author : ConteTer (Marco Ferrati, Michele Perlino, Tommaso Azzalin, Vittoria Conte) *)
+(* :Title: Italy 2018 Election Data Analysis *)
+(* :Context: Italy 2018 Election Data Analysis *)
+(* :Author: ConteTer (Marco Ferrati, Michele Perlino, Tommaso Azzalin, Vittoria Conte) *)
 (* :Summary: Package for analysing the 2018 Italian political election data published by the the Ministry of the Interior. *)
-(* :Copyright : MIT *)
-(* :Package Version : 1 *)
-(* :Mathematica Versionfile : 12.2*)
-(* :History : *)
-(* :Keywords : italy, election, 2018, data, analysis*)
-(* :Sources : https://github.com/jjocram/italy-2018-election-data-mathematica *)
-(* :Discussion : *)
+(* :Copyright: MIT *)
+(* :Package Version: 1 *)
+(* :Mathematica Versionfile: 12.2 *)
+(* :History: *)
+(* :Keywords: italy, election, 2018, data, analysis *)
+(* :Sources: https://github.com/jjocram/italy-2018-election-data-mathematica *)
+(* :Discussion: *)
 
 
 BeginPackage["Italy2018ElectionDataAnalysis`"]
@@ -27,17 +27,17 @@ Begin["`Private`"]
 
 	(* CONSTANTS *)
 	
-	(* Houses *)
+	(* Houses of the Italian Parliament. *)
 	ChamberOfDeputies = "Chamber of Deputies"
 	SenateOfTheRepublic = "Senate of the Republic"
 	
-	(* Italian regions *)
+	(* Italian regions. *)
 	REGIONS = {"ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA", "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO", "LIGURIA", "LOMBARDIA", "MARCHE", "MOLISE", "PIEMONTE", "PUGLIA", "SARDEGNA", "SICILIA", "TOSCANA", "TRENTINO-ALTO ADIGE", "UMBRIA", "VALLE D'AOSTA", "VENETO"};
 	
-	(* Italian provinces *)
+	(* Italian provinces. *)
 	PROVINCES = {"AGRIGENTO", "ALESSANDRIA", "ANCONA", "AOSTA", "AREZZO", "ASCOLI PICENO", "ASTI", "AVELLINO", "BARI", "BARLETTA-ANDRIA-TRANI", "BELLUNO", "BENEVENTO", "BERGAMO", "BIELLA", "BOLOGNA", "BOLZANO", "BRESCIA", "BRINDISI", "CAGLIARI", "CALTANISSETTA", "CAMPOBASSO", "CASERTA", "CATANIA", "CATANZARO", "CHIETI", "COMO", "COSENZA", "CREMONA", "CROTONE", "CUNEO", "ENNA", "FERMO", "FERRARA", "FIRENZE", "FOGGIA", "FORLI'-CESENA", "FROSINONE", "GENOVA", "GORIZIA", "GROSSETO", "IMPERIA", "ISERNIA", "L'AQUILA", "LA SPEZIA", "LATINA", "LECCE", "LECCO", "LIVORNO", "LODI", "LUCCA", "MACERATA", "MANTOVA", "MASSA-CARRARA", "MATERA", "MESSINA", "MILANO", "MODENA", "MONZA E DELLA BRIANZA", "NAPOLI", "NOVARA", "NUORO", "ORISTANO", "PADOVA", "PALERMO", "PARMA", "PAVIA", "PAVIA", "PERUGIA", "PESARO E URBINO", "PESCARA", "PIACENZA", "PISA", "PISTOIA", "PORDENONE", "POTENZA", "PRATO", "RAGUSA", "REGGIO CALABRIA", "REGGIO EMILIA", "RIETI", "RIMINI", "ROMA", "ROVIGO", "SALERNO", "SASSARI", "SAVONA", "SIENA", "SIRACUSA", "SONDRIO", "SUD SARDEGNA", "TARANTO", "TERAMO", "TERNI", "TORINO", "TRAPANI", "TRENTO", "TREVISO", "TRIESTE", "UDINE", "VARESE", "VENEZIA", "VERBANO-CUSIO-OSSOLA", "VERCELLI", "VERONA", "VIBO VALENTIA", "VICENZA", "VITERBO"};
 	
-	(* Regions and their provinces *)
+	(* Regions and their provinces. *)
 	PROVINCESBYREGION = Association[
 		"ABRUZZO" -> {"CHIETI", "L'AQUILA", "PESCARA", "TERAMO"},
 		"BASILICATA" -> {"MATERA", "POTENZA"},
@@ -61,10 +61,10 @@ Begin["`Private`"]
 		"VENETO" -> {"BELLUNO", "PADOVA", "ROVIGO", "TREVISO", "VENEZIA", "VERONA", "VICENZA"}
 	];
 	
-	(* Italian electoral districts *)
+	(* Italian electoral districts (circoscrizioni). *)
 	DISTRICTS = {"ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA 1", "CAMPANIA 2", "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO 1", "LAZIO 2", "LIGURIA", "LOMBARDIA 1", "LOMBARDIA 2", "LOMBARDIA 3", "LOMBARDIA 4", "MARCHE", "MOLISE", "PIEMONTE 1", "PIEMONTE 2", "PUGLIA", "SARDEGNA", "SICILIA 1", "SICILIA 2", "TOSCANA", "TRENTINO-ALTO ADIGE/S\[CapitalUDoubleDot]DTIROL", "UMBRIA", "VENETO 1", "VENETO 2"};
 	
-	(* Regions and their districts (circoscrizioni) *)
+	(* Regions and their districts (circoscrizioni). *)
 	DISTRICTSBYREGION = Association[
 		"ABRUZZO" -> {"ABRUZZO"},
 		"BASILICATA" -> {"BASILICATA"},
@@ -102,7 +102,7 @@ Begin["`Private`"]
 		]
 	];
 	
-	(* The following two maps are not representative of the official coalitions that were present during the elections. *)
+	(* The following two associations/maps, respectively for the Chamber of Deputies and Senate of the Republic, are not representative of the official coalitions that were present during the 2018 elections. *)
 	(* They are a simplified version: left and *-left parties are put corresponding to key "Sinistra", right and *-right parties are put corresponding to key "Destra", center and/or miscellanea are put corresponding to key "Centro". *)
 	COALITIONSCHAMBER = Association[
 		"2018" -> Association[
@@ -118,7 +118,25 @@ Begin["`Private`"]
 			"Sinistra" -> {"+EUROPA", "10 VOLTE MEGLIO", "CIVICA POPOLARE LORENZIN", "ITALIA EUROPA INSIEME", "LIBERI E UGUALI", "PARTITO DEMOCRATICO", "PARTITO VALORE UMANO", "PER UNA SINISTRA REVOLUZIONARIA", "POTERE AL POPOLO!", "PATTO PER L'AUTONOMIA", "SIAMO", "PARTITO COMUNISTA"}
 		]
 	]
-	
+
+
+	(* DATA KEYS FOR ACCESSING FIELDS OF DATASETKEYS *)
+	DISTRICT = "district";
+	PROVINCE = "province";
+	LASTNAME = "lastname";
+	FIRSTNAME = "firstname";
+	CITY = "city";
+	HOUSE = "house";
+	MALEELECTORS = "maleElectors";
+	FEMALEELECTORS = "femaleElectors";
+	MALEVOTERS = "maleVoters";
+	FEMALEVOTERS = "femaleVoters";
+	VOTICANDUNINOM = "singleMemberDistrictCandidateVotes";
+	COALITION = "list";
+	UNINOMINALE = "singleMemberDistrict";
+	VOTISOLOCANDUNINOM = "singleMemberDistrictCandidateOnlyVotes";
+
+	(* MAPPING OF THE DATA KEYS TO THE DATASET COLUMNS *)
 	DATASETKEYS = Association[
 		"2018" -> Association[
 			DISTRICT -> "CIRCOSCRIZIONE",
@@ -136,50 +154,25 @@ Begin["`Private`"]
 			VOTISOLOCANDUNINOM -> "VOTISOLOCANDUNINOM"
 		]
 	];
-
-
-	(* DATA KEYS *)
-	DISTRICT = "district";
-	PROVINCE = "province";
-	LASTNAME = "lastname";
-	FIRSTNAME = "firstname";
-	CITY = "city";
-	HOUSE = "house";
-	MALEELECTORS = "maleElectors";
-	FEMALEELECTORS = "femaleElectors";
-	MALEVOTERS = "maleVoters";
-	FEMALEVOTERS = "femaleVoters";
-	VOTICANDUNINOM = "singleMemberDistrictCandidateVotes";
-	COALITION = "list";
-	UNINOMINALE = "singleMemberDistrict";
-	VOTISOLOCANDUNINOM = "singleMemberDistrictCandidateOnlyVotes";
 	
 	(* CHART LABELS *)
-	(* English labels *)
 	ENLBLMALEELECTORS = "Male electors";
 	ENLBLFEMALEELECTORS = "Female electors";
 	ENLBLMALEVOTERS = "Male voters";
 	ENLBLFEMALEVOTERS = "Female voters";
 	ENLBLMALENONVOTERS = "Male\nnon-voters";
 	ENLBLFEMALENONVOTERS = "Female\nnon-voters";
-	(* Italian labels *)
-	ITLBLMALEELECTORS = "Elettori maschi";
-	ITLBLFEMALEELECTORS = "Elettori femmine";
-	ITLBLMALEVOTERS = "Votanti maschi";
-	ITLBLFEMALEVOTERS = "Votanti femmine";
-	ITLBLMALENONVOTERS = "Non votanti maschi";
-	ITLBLFEMALENONVOTERS = "Non votanti femmine";
 
 
 	(* DATA FIELDS *)
 	
-	(* Year selected by the user *)
+	(* Year selected by the user. *)
 	selectedYear;
 	
-	(* Stores the original election dataset for the Chamber of Deputies (Camera dei Deputati) from the open data website of the Ministry of the Interior. *)
+	(* Stores the original election dataset of the Chamber of Deputies (Camera dei Deputati) from the open data website of the Ministry of the Interior. *)
 	chamberDataset;
 	
-	(* Stores the original election dataset for the Senate of the Republic (Senato della Repubblica) from the open data website of the Ministry of the Interior. *)
+	(* Stores the original election dataset of the Senate of the Republic (Senato della Repubblica) from the open data website of the Ministry of the Interior. *)
 	senateDataset;
 
 
@@ -196,7 +189,7 @@ Begin["`Private`"]
 					Return[Null];
 				)
 			];
-			(* Storing the user selection *)
+			(* Storing the user selection in the package variable selectedYear for later use. *)
 			selectedYear = year;
 			
 			(* Retrieving the dataset and saving it into the kernel. *)
@@ -224,65 +217,81 @@ Begin["`Private`"]
 			Return[importedDS];
 		]
 	
-	(* d is used instead of district because it does not work otherwise *)
+	(* Returns the region which the district d is part of. *)
 	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ", _}], Take[Characters[d], Length[Characters[d]]-2], d]]
 	
-	(* Filters the given dataset by the given region *)
+	(* Filters the given dataset returning only data of the given region. *)
 	FilterRegion[dataset_, region_] := 
-	If[region === Null, dataset, 
-		dataset[
-			Select[
-				StringMatchQ[
-					#[DATASETKEYS[[selectedYear]][[DISTRICT]]], 
-					((ToUpperCase[region] ~~ " " ~~ ("1" | "2" | "3" | "4")) | ToUpperCase[region])
-				]&
+		If[region === Null, dataset, 
+			dataset[
+				Select[
+					StringMatchQ[
+						#[DATASETKEYS[[selectedYear]][[DISTRICT]]], 
+						((ToUpperCase[region] ~~ " " ~~ ("1" | "2" | "3" | "4")) | ToUpperCase[region])
+					]&
+				]
 			]
 		]
-	]
 	
-	(* Filters the given dataset by the given province *)
+	(* Filters the given dataset returning only data of the given province. *)
 	FilterProvince[dataset_, province_] := If[province === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[PROVINCE]]] == ToUpperCase[province] &]]]
 	
-	(* Filters the given dataset by the given district *)
+	(* Filters the given dataset returning only data of the given district. *)
 	FilterDistrict[dataset_, district_] := If[district === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[DISTRICT]]] == ToUpperCase[district] &]]]
 	
-	(* Filters the given dataset by the given query typed by the user *)
+	(* Filters the given dataset returning only data satisfying the conditions expressed in the given query typed by the user. *)
 	FilterQuery[dataset_, query_] :=
 		Module [{queries, queryCharacters, qReplaced, params, datasetToReturn},
-			datasetToReturn = If[query === Null, Return[dataset], dataset]; (*Necessary to return the right values*)
+			If[
+				query === Null,
+				Return[dataset]
+			];
+			(* All filters will be applied to datasetToReturn. *)
+			datasetToReturn = dataset;
+			(* Splitting the query in the form "condition(, condition)*" in the parts is formed of. *)
 			queries = ToUpperCase[StringSplit[query, ","]];
 			Do[
-				qReplaced = StringReplace[q, " "->""];
+				qReplaced = StringReplace[q, " "->""]; (* Removing white spaces. *)
 				queryCharacters = Characters[qReplaced];
+				(* The next lines analyze the single conditions, search for binary operator <, >, = and apply the expressed conditions. *)
+				(* Inexistent fields will be ignored since they cannot be found. *)
 				datasetToReturn = If[
 					MatchQ[queryCharacters, {__, "<" , __}], 
-					(params = StringSplit[qReplaced, "<"]; (* In 1 there is the attribute, in 2 there is the value*)
-					datasetToReturn[Select[#[params[[1]]] < ToExpression[params[[2]]] &]]
+					(
+						params = StringSplit[qReplaced, "<"]; (* In 1 there is the attribute, in 2 there is the value. *)
+						datasetToReturn[Select[#[params[[1]]] < ToExpression[params[[2]]] &]]
 					), 
-					datasetToReturn];
+					datasetToReturn
+				];
 				datasetToReturn = If[
 					MatchQ[queryCharacters, {__, "=" , __}], 
-					(params = StringSplit[qReplaced, "="]; (* In 1 there is the attribute, in 2 there is the value*)
-					datasetToReturn[Select[#[params[[1]]] == ToExpression[params[[2]]] &]]
+					(
+						params = StringSplit[qReplaced, "="]; (* In 1 there is the attribute, in 2 there is the value. *)
+						datasetToReturn[Select[#[params[[1]]] == ToExpression[params[[2]]] &]]
 					), 
-					datasetToReturn];
+					datasetToReturn
+				];
 				datasetToReturn = If[
 					MatchQ[queryCharacters, {__, ">" , __}], 
-					(params = StringSplit[qReplaced, ">"]; (* In 1 there is the attribute, in 2 there is the value*)
-					datasetToReturn[Select[#[params[[1]]] > ToExpression[params[[2]]] &]]
+					(
+						params = StringSplit[qReplaced, ">"]; (* In 1 there is the attribute, in 2 there is the value. *)
+						datasetToReturn[Select[#[params[[1]]] > ToExpression[params[[2]]] &]]
 					), 
-					datasetToReturn]
-				,{q, queries}];
+					datasetToReturn
+				]
+				,
+				{q, queries}
+			];
 			Return[datasetToReturn]
 		]
     
-     (* Filters the given dataset by the given last name *)
+    (* Filters the given dataset returning only data of the given last name. *)
 	FilterLastName[dataset_, lastname_] := If[lastname === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[LASTNAME]]] == ToUpperCase[lastname] &]]]
 	
-	(* Filters the given dataset by the given first name *)
+	(* Filters the given dataset returning only data of the given first name. *)
 	FilterFirstName[dataset_, firstname_] := If[firstname === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[FIRSTNAME]]] == ToUpperCase[firstname] &]]]
 	
-    (* Filters the given dataset by the given city *)
+    (* Filters the given dataset returning only data of the given city. *)
 	FilterCity[dataset_, city_] := If[city === Null, dataset, dataset[Select[#[DATASETKEYS[[selectedYear]][[CITY]]] == ToUpperCase[city] &]]]
 
 
@@ -498,7 +507,7 @@ Begin["`Private`"]
 				Export[StringJoin[ToString[house], "_sx.3ds"], graphBar3DLeft];
 				Export[StringJoin[ToString[house], "_c.3ds"], graphBar3DCenter];
 				Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
-				Print["...Exported all file!"];
+				Print["...exported all files!"];
 				SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]]
 				]
 		]
