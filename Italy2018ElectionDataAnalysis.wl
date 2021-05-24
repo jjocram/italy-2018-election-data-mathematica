@@ -22,17 +22,15 @@ AnalyzeVotesForCoalitionsInRegions::usage = "AnalyzeVotesForCoalitionsInRegions[
 AnalyzeVotesForCandidate::usage = "AnalyzeVotesForCandidate[] generates the user interface with input fields for showing how many votes the searched candidate got in a city of his/her district."
 PlottingRegionsItalyMap::usage = "PlottingRegionsItalyMap[exportDPI] generate a .png file of Italy divided by region"
 PlottingElectionRegionCoalitionsBars3D::usage = "PlottingElectionRegionCoalitionsBars3D[house] generates the .3ds files for each 3D bar chart for each coalitions."
+(* Houses of the Italian Parliament. *)
+ChamberOfDeputies = "Chamber of Deputies"
+SenateOfTheRepublic = "Senate of the Republic"
 
 
 Begin["`Private`"]
 
 
 	(* CONSTANTS *)
-	
-	(* Houses of the Italian Parliament. *)
-	ChamberOfDeputies = "Chamber of Deputies"
-	SenateOfTheRepublic = "Senate of the Republic"
-	
 	(* Italian regions. *)
 	REGIONS = {"ABRUZZO", "BASILICATA", "CALABRIA", "CAMPANIA", "EMILIA-ROMAGNA", "FRIULI-VENEZIA GIULIA", "LAZIO", "LIGURIA", "LOMBARDIA", "MARCHE", "MOLISE", "PIEMONTE", "PUGLIA", "SARDEGNA", "SICILIA", "TOSCANA", "TRENTINO-ALTO ADIGE", "UMBRIA", "VALLE D'AOSTA", "VENETO"};
 	
@@ -222,6 +220,8 @@ Begin["`Private`"]
 	(* Returns the region which the district d is part of. *)
 	GetRegionFromDistrict[d_] := StringJoin[If[MatchQ[Characters[d],{__, " ", _}], Take[Characters[d], Length[Characters[d]]-2], d]]
 	
+	(*ToUpperCase is used inside Filters methods to normalize the user input. Moreover, the data inside the dataset is uppercased.*)
+	
 	(* Filters the given dataset returning only data of the given region. *)
 	FilterRegion[dataset_, region_] := 
 		If[region === Null, dataset, 
@@ -349,6 +349,13 @@ Begin["`Private`"]
 						String,
 						FieldSize -> Medium
 					]
+				}],
+				Row[{
+					Style["Available query fields: "],
+					StringJoin[{DATASETKEYS[[selectedYear]][[MALEELECTORS]], ", "}],
+					StringJoin[{DATASETKEYS[[selectedYear]][[FEMALEELECTORS]], ", "}],
+					StringJoin[{DATASETKEYS[[selectedYear]][[MALEVOTERS]], ", "}],
+					DATASETKEYS[[selectedYear]][[FEMALEVOTERS]]
 				}]
 			}, Center]];
 			
@@ -496,6 +503,8 @@ Begin["`Private`"]
 			centralCoordinates = Reverse /@ EntityValue[divisions, EntityProperty["AdministrativeDivision", "Coordinates"]];
 			polygons = EntityValue[divisions, EntityProperty["AdministrativeDivision", "Polygon"]];
 			
+			(*/1.000.000 is used to reduce the size of the bars in the 3D plot.*)
+			
 			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Sinistra"]};		
 			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
 			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False, Boxed->False];
@@ -518,7 +527,7 @@ Begin["`Private`"]
 			Return[Row[graphBar3DLeft, graphBar3DCenter, graphBar3DRight]];
 		]
 		
-		
+	(*exportDPI indicates the exported image quality. Higher the quality havier the image.*)
 	PlottingRegionsItalyMap[exportDPI_: 500] :=
 		Module[{regions, polygons, ItalyMap},
 			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
