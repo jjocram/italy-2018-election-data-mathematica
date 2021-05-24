@@ -498,15 +498,15 @@ Begin["`Private`"]
 			
 			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Sinistra"]};		
 			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
-			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False, Boxed->False];
 			
 			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Centro"]};		
 			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
-			graphBar3DCenter = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			graphBar3DCenter = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False, Boxed->False];
 			
 			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Destra"]};		
 			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
-			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
+			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False, Boxed->False];
 			
 			
 			Print["Exporting 3D models..."];
@@ -515,6 +515,7 @@ Begin["`Private`"]
 			Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
 			Print["...exported all files!"];
 			SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_l.3ds"]]]];
+			Return[Row[graphBar3DLeft, graphBar3DCenter, graphBar3DRight]];
 		]
 		
 		
@@ -528,6 +529,7 @@ Begin["`Private`"]
 			Export["ItalyMap.png", ItalyMap, ImageResolution -> exportDPI];
 			Print["...Exported the image!"];
 			SystemOpen[DirectoryName[AbsoluteFileName["ItalyMap.png"]]];
+			Return[ItalyMap];
 		]
 	
 	
