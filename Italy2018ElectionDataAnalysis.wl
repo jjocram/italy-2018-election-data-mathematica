@@ -490,36 +490,31 @@ Begin["`Private`"]
 		]
 		
 	PlottingElectionRegionCoalitionsBars3D[house_] :=
-		Module[{regions, temp, votes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
-			(* Retrieving Italian regions (those managed by Mathematica, since they need to be plotted). *)
-			regions = Entity["Country", "Italy"][EntityProperty["Country", "AdministrativeDivisions"]];
-			centralCoordinates = Reverse /@ EntityValue[regions, EntityProperty["AdministrativeDivision", "Coordinates"]];
-			polygons = EntityValue[regions, EntityProperty["AdministrativeDivision", "Polygon"]];
+		Module[{divisionUnordered, divisions, divisionsVotes, centralCoordinates, polygons, coord3D, graphBar3DLeft, graphBar3DCenter, graphBar3DRight},
+			divisionUnordered = EntityValue[Entity["AdministrativeDivision",{EntityProperty["AdministrativeDivision","ParentRegion"]->Entity["Country","Italy"]}],"Entities"];
+			divisions = Join[Take[divisionUnordered, 1], Take[divisionUnordered, {3, 13}], Take[divisionUnordered, {2, 2}], Take[divisionUnordered, {14, 20}]];
+			centralCoordinates = Reverse /@ EntityValue[divisions, EntityProperty["AdministrativeDivision", "Coordinates"]];
+			polygons = EntityValue[divisions, EntityProperty["AdministrativeDivision", "Polygon"]];
 			
-			temp = GetElectionRegionCoalitionsBars[house, "Sinistra"];
-			(* Both GetElectionRegionCoalitionsBars and Entity consider regions in an alphabetically ordered fashion. By th way, the first
-			functions uses Italian names, the second one uses English names, therefore a swapping is needed for "Apulia" = "Puglia". *)
-			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];			
-			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
+			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Sinistra"]};		
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
 			graphBar3DLeft = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
-			temp = GetElectionRegionCoalitionsBars[house, "Centro"];
-			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];						
-			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
+			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Centro"]};		
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
 			graphBar3DCenter = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
-			temp = GetElectionRegionCoalitionsBars[house, "Destra"];
-			votes = Join[Take[temp, 1], Take[temp, {3, 13}], Take[temp, {2, 2}], Take[temp, {14, 20}]];
-			coord3D = Partition[Flatten[Transpose@{centralCoordinates, votes/1000000}], 3];
+			divisionsVotes = Transpose @ {divisions, GetElectionRegionCoalitionsBars[house, "Destra"]};		
+			coord3D = Partition[Flatten[Transpose@{centralCoordinates,divisionsVotes[[All,2]]/1000000}], 3];
 			graphBar3DRight = Graphics3D[{Yellow, Cuboid[{#1, #2, 0}, {#1 + .2, #2 + .2, #3}] & @@@ coord3D}, Axes -> False];
 			
 			
 			Print["Exporting 3D models..."];
-			Export[StringJoin[ToString[house], "_sx.3ds"], graphBar3DLeft];
+			Export[StringJoin[ToString[house], "_l.3ds"], graphBar3DLeft];
 			Export[StringJoin[ToString[house], "_c.3ds"], graphBar3DCenter];
 			Export[StringJoin[ToString[house], "_r.3ds"], graphBar3DRight];
 			Print["...exported all files!"];
-			SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_sx.3ds"]]]];
+			SystemOpen[DirectoryName[AbsoluteFileName[StringJoin[ToString[house], "_l.3ds"]]]];
 		]
 		
 		
